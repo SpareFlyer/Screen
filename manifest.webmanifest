@@ -1,0 +1,16 @@
+{
+  "name": "SCREEN",
+  "short_name": "SCREEN",
+  "description": "Compartilhe sua tela em tempo real, direto pelo navegador.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#09090f",
+  "theme_color": "#09090f",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
