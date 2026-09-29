@@ -49,19 +49,19 @@
   .bg{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
   .bg::before{
     content:""; position:absolute; inset:0;
-    background:
-      radial-gradient(60% 55% at 8% 30%, rgba(139,92,246,.10), transparent 70%),
-      radial-gradient(45% 50% at 92% 95%, rgba(139,92,246,.22), transparent 70%),
-      radial-gradient(40% 40% at 78% 20%, rgba(139,92,246,.07), transparent 70%),
-      linear-gradient(180deg,#09090f,#06060a);
+    background:#09090b;
   }
-  .bg-dots{
-    position:absolute; left:0; top:0; bottom:0; width:48%;
-    background-image:radial-gradient(rgba(167,139,250,.22) 1px, transparent 1.4px);
-    background-size:14px 14px;
-    -webkit-mask-image:linear-gradient(90deg,#000 0%,transparent 100%);
-            mask-image:linear-gradient(90deg,#000 0%,transparent 100%);
+  .ekg-wrap{
+    position:absolute; left:0; right:0; top:42%; height:140px; overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
     opacity:.55;
+  }
+  .ekg-track{ position:absolute; top:0; left:0; height:140px; display:flex; }
+  .ekg-track svg{display:block; height:140px; flex:none;}
+  .ekg-track path{
+    fill:none; stroke:#8b5cf6; stroke-width:2.5; stroke-linejoin:round; stroke-linecap:round;
+    filter:drop-shadow(0 0 6px rgba(139,92,246,.55));
   }
   .bg-art{
     position:absolute; right:0; bottom:0; height:100%; width:min(56vw,980px);
@@ -432,7 +432,7 @@
 <body>
 
 <div class="bg" aria-hidden="true">
-  <div class="bg-dots"></div>
+  <div class="ekg-wrap"><div class="ekg-track" id="ekgTrack"></div></div>
   <div class="bg-art"></div>
 </div>
 
@@ -489,7 +489,6 @@
       </div>
     </section>
   </div>
-  <div class="foot">Desenvolvido por <a class="dev" href="#" target="_blank" rel="noopener noreferrer"><b>SpareFlyer</b></a></div>
 </main>
 
 <!-- ================= CONVITE ================= -->
@@ -525,7 +524,6 @@
       </button>
     </div>
   </section>
-  <div class="foot">Desenvolvido por <a class="dev" href="#" target="_blank" rel="noopener noreferrer"><b>SpareFlyer</b></a></div>
 </main>
 
 <!-- ================= SALA ================= -->
@@ -689,7 +687,7 @@
   const JOIN_TIMEOUT_MS = 9000;
   const MAX_PEOPLE = 10;
   // Cole aqui o seu ID de usuario do Discord (so os numeros)
-  const DISCORD_ID = '950846680545255504';
+  const DISCORD_ID = 'SEU_ID_AQUI';
   const DISCORD_WEB = 'https://discord.com/users/' + DISCORD_ID;
   const DISCORD_APP = 'discord://-/users/' + DISCORD_ID;
   const IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -1771,6 +1769,53 @@
     else if(m.type==='attributes') node(m.target);
     else m.addedNodes.forEach(node);
   }); }).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTR});
+})();
+</script>
+<script>
+(function(){
+  var W = 300; // largura de cada trecho de linha entre batimentos
+  function randRange(a,b){ return a + Math.random()*(b-a); }
+  function beatPath(x0, base){
+    var spike = randRange(40,60), notch = randRange(15,30), tall = randRange(50,75);
+    var x = x0;
+    var p = ' L' + x + ',' + base;
+    x += randRange(60,110); p += ' L' + x + ',' + base;
+    var x1 = x + randRange(14,22); p += ' L' + x1 + ',' + (base - spike);
+    var x2 = x1 + randRange(18,26); p += ' L' + x2 + ',' + (base + tall);
+    var x3 = x2 + randRange(10,16); p += ' L' + x3 + ',' + (base - notch);
+    var x4 = x3 + randRange(16,24); p += ' L' + x4 + ',' + base;
+    x0 = x4 + W;
+    p += ' L' + x0 + ',' + base;
+    return { d:p, next:x0 };
+  }
+  function makeStrip(totalWidth, base){
+    var d = 'M0,' + base, x = 0;
+    while (x < totalWidth){ var r = beatPath(x, base); d += r.d; x = r.next; }
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 ' + x + ' 140');
+    svg.setAttribute('preserveAspectRatio','none');
+    svg.setAttribute('width', x); svg.setAttribute('height', 140);
+    var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', d);
+    svg.appendChild(path);
+    return { svg:svg, width:x };
+  }
+  var track = document.getElementById('ekgTrack');
+  if (!track) return;
+  function loop(){
+    var vw = Math.max(window.innerWidth, 800) + 400;
+    var a = makeStrip(vw, 70), b = makeStrip(vw, 70);
+    track.replaceChildren(a.svg, b.svg);
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(0)';
+    // força o navegador a aplicar antes de animar
+    void track.offsetWidth;
+    var dur = a.width / 90; // velocidade constante, em segundos
+    track.style.transition = 'transform ' + dur + 's linear';
+    requestAnimationFrame(function(){ track.style.transform = 'translateX(-' + a.width + 'px)'; });
+    setTimeout(loop, dur * 1000);
+  }
+  loop();
 })();
 </script>
 </body>
