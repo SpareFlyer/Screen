@@ -2,1820 +2,647 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SCREEN · Tela ao vivo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SCREEN 2.0 · Sua tela no ar</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#09090f">
+<meta name="theme-color" content="#2342ff">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SCREEN">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#09090f;
-    --panel:rgba(18,16,30,.72);
-    --line:rgba(255,255,255,.08);
-    --line-strong:rgba(255,255,255,.16);
-    --text:#f4f4f8;
-    --muted:#9a98ab;
-    --cyan:#8b5cf6;
-    --cyan-hi:#a78bfa;
-    --cyan-soft:#ddd6fe;
-    --cyan-deep:#5b21b6;
-    --danger:#ffffff;
-    --ok:#a78bfa;
-
-    /* Imagem de fundo da tela inicial: troque por url("arquivo.png") */
-    --art: none;
-  }
-  *{box-sizing:border-box;}
-  [hidden]{display:none !important;}
-  html,body{height:100%;}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased; min-height:100%; overflow-x:hidden;
-  }
-  body.in-room{background:#0a0a12; overflow:hidden;}
-  body.in-room .bg{display:none;}
-  button,input{font-family:inherit;}
-  button{color:inherit;}
-  :focus-visible{outline:2px solid var(--cyan-hi); outline-offset:2px;}
-
-  /* ---------- fundo (tela inicial) ---------- */
-  .bg{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
-  .bg::before{
-    content:""; position:absolute; inset:0;
-    background:#09090b;
-  }
-  .ekg-wrap{
-    position:absolute; left:0; right:0; top:42%; height:140px; overflow:hidden;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-            mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-    opacity:.55;
-  }
-  .ekg-track{ position:absolute; top:0; left:0; height:140px; display:flex; }
-  .ekg-track svg{display:block; height:140px; flex:none;}
-  .ekg-track path{
-    fill:none; stroke:#8b5cf6; stroke-width:2.5; stroke-linejoin:round; stroke-linecap:round;
-    filter:drop-shadow(0 0 6px rgba(139,92,246,.55));
-  }
-  .bg-art{
-    position:absolute; right:0; bottom:0; height:100%; width:min(56vw,980px);
-    background:var(--art) right bottom / contain no-repeat;
-    -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 30%);
-            mask-image:linear-gradient(90deg,transparent 0%,#000 30%);
-  }
-
-  .view{position:relative; z-index:1; min-height:100vh; display:none;}
-  .view.on{display:flex;}
-
-  /* ---------- HOME ---------- */
-  #home{align-items:center; justify-content:center; padding:48px clamp(24px,6vw,96px) 72px;}
-  .stage{
-    width:100%; max-width:1300px;
-    display:grid; grid-template-columns:minmax(0,1fr) 395px; gap:64px; align-items:center;
-  }
-  .brandline{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
-  .brandline .name{display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800; letter-spacing:.24em;}
-  .brandline .name::before{content:""; width:3px; height:15px; background:var(--cyan-hi); border-radius:2px;}
-  h1.hero-title{margin:0 0 24px; font-size:clamp(34px,4.2vw,48px); line-height:1.08; font-weight:700; letter-spacing:-.025em;}
-  h1.hero-title em{
-    font-style:normal;
-    background:linear-gradient(90deg,var(--cyan-soft),var(--cyan-hi));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-  .hero-sub{margin:0 0 30px; max-width:440px; font-size:16px; line-height:1.55; color:#d4d3e0;}
-  .feats{list-style:none; margin:0 0 36px; padding:0; display:flex; flex-direction:column; gap:12px;}
-  .feats li{display:flex; align-items:center; gap:14px; font-size:14px; color:#b8b7c8;}
-  .feats .ic{
-    width:28px; height:28px; flex:0 0 28px; display:grid; place-items:center;
-    border:1px solid var(--line-strong); border-radius:7px; background:rgba(255,255,255,.03); color:var(--cyan-hi);
-  }
-  svg.i{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto;}
-
-  .card{
-    position:relative; background:#0f0e18;
-    border:1px solid var(--line); border-radius:16px; padding:24px;
-    box-shadow:none;
-  }
-  .card::before{
-    content:""; position:absolute; left:16px; right:16px; top:-1px; height:1px;
-    background:linear-gradient(90deg,transparent,var(--cyan-hi),transparent); opacity:.7;
-  }
-  .card h2{margin:0 0 6px; font-size:17px; font-weight:700; letter-spacing:-.01em;}
-  .card .sub{margin:0 0 22px; font-size:13px; color:var(--muted); line-height:1.45;}
-
-  .nickrow{display:flex; align-items:flex-end; gap:14px; margin-bottom:18px;}
-  .avatar-btn{position:relative; display:block; width:46px; height:46px; padding:0; border:0; cursor:pointer; border-radius:50%; background:transparent; flex:0 0 auto;}
-  .avatar{
-    --s:46px; width:var(--s); height:var(--s); border-radius:50%;
-    display:grid; place-items:center; overflow:hidden; flex:0 0 auto;
-    font-size:calc(var(--s) * .52); line-height:1; box-shadow:0 0 0 2px rgba(255,255,255,.10);
-    color:#fff; user-select:none;
-  }
-  .avatar.ini{font-size:calc(var(--s) * .36); font-weight:700; letter-spacing:.02em;}
-  .avatar img{width:100%; height:100%; object-fit:cover; display:block;}
-  .avatar-badge{
-    position:absolute; right:-3px; bottom:-3px; width:18px; height:18px; border-radius:50%;
-    background:var(--cyan); border:2px solid #0a0a12; display:grid; place-items:center; color:#fff;
-  }
-  .avatar-badge svg{width:9px; height:9px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
-
-  .field{flex:1; min-width:0;}
-  .field-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
-  .lbl{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
-  .count{font-size:11px; color:#6f6d82; font-variant-numeric:tabular-nums;}
-  .input{
-    width:100%; height:42px; padding:0 14px; border-radius:9px;
-    background:rgba(5,5,10,.75); color:var(--text);
-    border:1px solid var(--line-strong); font-size:14px; transition:border-color .15s, box-shadow .15s;
-  }
-  .input::placeholder{color:#6a6880;}
-  .input:focus{outline:none; border-color:var(--cyan-hi); box-shadow:0 0 0 3px rgba(167,139,250,.14);}
-  .input.invalid{border-color:var(--danger); box-shadow:0 0 0 3px rgba(255,255,255,.14); animation:shake .28s;}
-  @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    height:42px; padding:0 18px; border:0; border-radius:9px; cursor:pointer;
-    font-size:14px; font-weight:600; transition:filter .15s, background .15s, opacity .15s;
-  }
-  .btn-primary{width:100%; background:var(--cyan); color:#fff;}
-  .btn-primary:hover{filter:brightness(1.08);}
-  .btn-secondary{background:var(--cyan-deep); color:#ede9fe;}
-  .btn-secondary:hover{filter:brightness(1.15);}
-  .btn:disabled{opacity:.45; cursor:not-allowed; filter:none;}
-  .btn svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
-
-  .or{display:flex; align-items:center; gap:14px; margin:20px 0 16px; color:#6f6d82; font-size:11px; letter-spacing:.14em; font-weight:600;}
-  .or::before,.or::after{content:""; flex:1; height:1px; background:var(--line);}
-  .joinrow{display:flex; gap:10px; margin-top:8px;}
-  .joinrow .input{
-    flex:1; min-width:0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    letter-spacing:.18em; text-transform:uppercase;
-  }
-  .joinrow .input::placeholder{letter-spacing:.18em;}
-
-  .foot{position:fixed; z-index:2; left:0; right:0; bottom:20px; text-align:center; font-size:12px; color:#7a788d; pointer-events:none;}
-  .foot b{color:var(--cyan-hi); font-weight:600;}
-  .foot a.dev{pointer-events:auto; text-decoration:none; color:inherit; padding:4px 2px;}
-  .foot a.dev b{border-bottom:1px solid transparent; transition:border-color .15s, color .15s;}
-  .foot a.dev:hover b{color:var(--cyan-soft); border-bottom-color:currentColor;}
-
-  /* ---------- painel "SEU AVATAR" (home e sala) ---------- */
-  .apanel{
-    position:fixed; z-index:40; width:250px;
-    background:#14121f; border:1px solid var(--line-strong); border-radius:14px;
-    box-shadow:0 24px 60px rgba(0,0,0,.6);
-  }
-  .apanel-head{display:flex; align-items:center; justify-content:space-between; padding:14px 14px 12px; border-bottom:1px solid var(--line);}
-  .xbtn{width:24px; height:24px; border:0; background:none; border-radius:6px; cursor:pointer; color:var(--muted); display:grid; place-items:center;}
-  .xbtn:hover{color:var(--text); background:rgba(255,255,255,.06);}
-  .apanel-grid{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:12px; justify-items:center;
-    padding:14px; max-height:236px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:#3a3752 transparent;
-  }
-  .apanel-grid button{padding:0; border:0; background:none; cursor:pointer; border-radius:50%; transition:transform .12s;}
-  .apanel-grid button:hover{transform:scale(1.07);}
-  .apanel-grid button[aria-pressed="true"] .avatar{box-shadow:0 0 0 2px var(--cyan-hi), 0 0 0 4px rgba(167,139,250,.18);}
-  .apanel-foot{padding:12px 14px 14px; border-top:1px solid var(--line);}
-  .apanel-foot .lbl{display:flex; align-items:center; gap:7px; margin-bottom:10px; letter-spacing:.06em;}
-  .apanel-foot .lbl svg{width:12px; height:12px;}
-  .aprow{display:flex; gap:8px;}
-  .aprow .input{height:38px; font-size:12.5px; padding:0 10px; flex:1; min-width:0;}
-  .aprow .btn{height:38px; padding:0 16px; background:var(--cyan); color:#fff; font-size:13px;}
-  .aperr{margin-top:8px; font-size:12px; color:var(--danger); min-height:0;}
-  .aperr:empty{display:none;}
-
-  .toast{
-    position:fixed; z-index:60; left:50%; bottom:56px; transform:translate(-50%,20px);
-    background:#13111d; border:1px solid var(--line-strong); color:var(--text);
-    padding:11px 18px; border-radius:10px; font-size:13.5px; max-width:90vw;
-    opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; box-shadow:0 12px 40px rgba(0,0,0,.5);
-  }
-  .toast.on{opacity:1; transform:translate(-50%,0);}
-  .toast.err{border-color:rgba(255,255,255,.5);}
-
-  /* ---------- SALA ---------- */
-  #room{flex-direction:column; height:100vh; min-height:0; padding:0;}
-  .rtop{
-    flex:0 0 49px; display:flex; align-items:center; justify-content:space-between;
-    padding:0 12px 0 8px; border-bottom:1px solid var(--line); background:#0b0a14;
-  }
-  .rtop-l,.rtop-r{display:flex; align-items:center; gap:14px;}
-  .rbrand{font-weight:800; font-size:15px; letter-spacing:-.01em; padding-left:0;}
-  .chip{
-    display:inline-flex; align-items:center; gap:8px; height:28px; padding:0 10px; border-radius:8px;
-    font-size:12px; font-weight:600; border:1px solid var(--line-strong); background:rgba(255,255,255,.03); color:#d4d3e0;
-  }
-  .chip svg.i{width:12px; height:12px;}
-  .chip-code{
-    cursor:pointer; color:var(--cyan-soft); border-color:rgba(167,139,250,.4); background:rgba(139,92,246,.10);
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; letter-spacing:.12em; height:30px; padding:0 12px;
-  }
-  .chip-code:hover{border-color:var(--cyan-hi);}
-  .conn{display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:500; color:var(--ok);}
-  .conn i{width:6px; height:6px; border-radius:50%; background:currentColor;}
-  .conn.wait{color:#a78bfa;}
-  .conn.bad{color:var(--danger);}
-
-  .rbody{flex:1; min-height:0; display:grid; grid-template-columns:259px minmax(0,1fr);}
-  .side{border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0; background:#0a0a12;}
-  .side-scroll{flex:1; min-height:0; overflow-y:auto; scrollbar-width:thin; scrollbar-color:#302d47 transparent;}
-  .codecard{margin:12px; padding:14px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.02);}
-  .codecard-row{display:flex; align-items:center; justify-content:space-between; margin:12px 0 14px;}
-  .codebig{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-weight:700; font-size:15px; letter-spacing:.2em;}
-  .mini{width:26px; height:26px; border:0; background:none; border-radius:6px; cursor:pointer; color:var(--muted); display:grid; place-items:center;}
-  .mini:hover{color:var(--text); background:rgba(255,255,255,.06);}
-  .btn-outline{
-    width:100%; height:38px; display:inline-flex; align-items:center; justify-content:center; gap:9px;
-    border-radius:9px; border:1px solid var(--line-strong); background:rgba(255,255,255,.02);
-    font-size:13.5px; font-weight:500; cursor:pointer; color:#e2e1ee; transition:border-color .15s, background .15s;
-  }
-  .btn-outline:hover{border-color:rgba(167,139,250,.5); background:rgba(139,92,246,.06);}
-  .side-sep{height:1px; background:var(--line); margin:4px 0 0;}
-  .sechead{padding:16px 14px 8px; font-size:11px; letter-spacing:.1em; font-weight:600; color:var(--muted); text-transform:uppercase;}
-  .prow{
-    display:flex; align-items:center; gap:11px; width:calc(100% - 12px); margin:2px 6px; padding:7px 8px;
-    border-radius:10px; border:0; background:none; text-align:left; cursor:default;
-  }
-  .prow.click{cursor:pointer;}
-  .prow.click:hover{background:rgba(255,255,255,.05);}
-  .prow.active{background:rgba(139,92,246,.18);}
-  .pav{position:relative; flex:0 0 auto;}
-  .pav .avatar{--s:34px; box-shadow:none;}
-  .pav .dot{position:absolute; right:-2px; bottom:-2px; width:11px; height:11px; border-radius:50%; background:var(--ok); border:2px solid #0a0a12;}
-  .prow.active .pav .dot{border-color:#22203a;}
-  .pinfo{flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;}
-  .pname{display:flex; align-items:center; gap:7px; font-size:14px; font-weight:600; min-width:0;}
-  .pname .t{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .pname .crown{width:12px; height:12px; color:#a78bfa; flex:0 0 auto;}
-  .badge-you{
-    font-size:10px; font-weight:700; letter-spacing:.06em; color:var(--cyan-hi);
-    background:rgba(139,92,246,.14); border:1px solid rgba(167,139,250,.3); border-radius:5px; padding:1px 6px; flex:0 0 auto;
-  }
-  .psub{font-size:12px; color:var(--muted);}
-  .psub.live{color:var(--cyan-hi);}
-  .prow .scr{width:15px; height:15px; color:var(--cyan-hi); flex:0 0 auto; opacity:.9;}
-
-  .side-foot{padding:10px; border-top:1px solid var(--line);}
-  .mepill{
-    display:flex; align-items:center; gap:10px; width:100%; padding:7px 12px 7px 8px; border-radius:999px;
-    border:1px solid var(--line-strong); background:rgba(255,255,255,.03); cursor:pointer; text-align:left;
-    font-size:12.5px; color:var(--muted); transition:border-color .15s;
-  }
-  .mepill:hover{border-color:rgba(167,139,250,.45);}
-  .mepill .avatar{--s:26px; box-shadow:none;}
-  .mepill .mtxt{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .mepill b{color:#e2e1ee; font-weight:600;}
-  .mepill svg{width:13px; height:13px; color:var(--muted);}
-
-  .main{display:flex; flex-direction:column; min-width:0; min-height:0; padding:14px 14px 0;}
-  .stagebox{
-    position:relative; flex:1; min-height:0; overflow:hidden; border-radius:14px;
-    border:1px solid var(--line); background:#050509;
-  }
-  .viewport{position:absolute; inset:0; touch-action:none;}
-  .viewport.zoomed{cursor:grab;}
-  .viewport.dragging{cursor:grabbing;}
-  #rvideo{
-    position:absolute; left:0; top:0; width:100%; height:100%; object-fit:contain;
-    transform-origin:0 0; background:transparent; display:block;
-  }
-  .stagectl{position:absolute; top:12px; right:12px; display:flex; gap:8px; z-index:5;}
-  .ibtn{
-    width:34px; height:34px; border-radius:9px; border:1px solid var(--line-strong); background:rgba(8,8,14,.82);
-    color:#dcdbe8; display:grid; place-items:center; cursor:pointer; transition:border-color .15s, background .15s;
-  }
-  .ibtn:hover:not(:disabled){border-color:rgba(167,139,250,.55); background:rgba(139,92,246,.12);}
-  .ibtn:disabled{opacity:.38; cursor:not-allowed;}
-  .ibtn svg.i{width:16px; height:16px;}
-  .who{
-    position:absolute; left:12px; bottom:12px; z-index:5; display:flex; align-items:center; gap:8px;
-    padding:7px 13px 7px 11px; border-radius:999px; background:rgba(8,8,14,.88); border:1px solid var(--line);
-    font-size:12.5px; font-weight:600;
-  }
-  .who i{width:6px; height:6px; border-radius:50%; background:var(--ok);}
-  .who .crown{width:12px; height:12px; color:#a78bfa;}
-  .overlay{position:absolute; inset:0; z-index:4; display:grid; place-items:center; text-align:center; padding:28px;}
-  .ov-in{max-width:340px; display:flex; flex-direction:column; align-items:center; gap:8px;}
-  .ov-ic{width:44px; height:44px; border-radius:12px; display:grid; place-items:center; border:1px solid var(--line-strong); color:var(--cyan-hi); background:rgba(139,92,246,.07); margin-bottom:6px;}
-  .ov-ic svg.i{width:20px; height:20px;}
-  .ov-t{font-size:15px; font-weight:600;}
-  .ov-s{font-size:13px; color:var(--muted); line-height:1.5;}
-  .ov-in .btn{margin-top:10px;}
-  .spin{width:20px; height:20px; border-radius:50%; border:2px solid rgba(167,139,250,.25); border-top-color:var(--cyan-hi); animation:spin .9s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .reacts{position:absolute; inset:0; z-index:6; pointer-events:none; overflow:hidden;}
-  .react{position:absolute; bottom:64px; display:flex; flex-direction:column; align-items:center; gap:2px; animation:floatUp 2.2s ease-out forwards;}
-  .react .re{font-size:34px; line-height:1; filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));}
-  .react .rn{font-size:11px; font-weight:600; padding:1px 7px; border-radius:999px; background:rgba(8,8,14,.85); border:1px solid var(--line);}
-  @keyframes floatUp{0%{transform:translateY(0) scale(.6); opacity:0} 12%{opacity:1; transform:translateY(-20px) scale(1)} 100%{transform:translateY(-260px) scale(1.05); opacity:0}}
-  .stagebox:fullscreen{border-radius:0; border:0;}
-
-  .dockwrap{flex:0 0 auto; display:flex; justify-content:center; padding:14px 0 16px;}
-  .dock{
-    display:flex; align-items:center; gap:6px; padding:6px; border-radius:18px;
-    background:rgba(14,12,24,.92); border:1px solid rgba(167,139,250,.20); box-shadow:0 0 34px rgba(139,92,246,.10);
-  }
-  .dock .share{
-    display:inline-flex; align-items:center; gap:10px; height:40px; padding:0 20px; border:0; border-radius:12px;
-    background:var(--cyan); color:#fff; font-weight:600; font-size:14px; cursor:pointer; transition:filter .15s, background .15s;
-  }
-  .dock .share:hover{filter:brightness(1.08);}
-  .dock .share.on{background:#f4f4f8; color:#09090f;}
-  .dock .share svg.i{width:16px; height:16px; stroke-width:2;}
-  .dock .sep{width:1px; height:22px; background:var(--line-strong); margin:0 6px;}
-  .dock .dbtn{
-    width:40px; height:40px; border-radius:11px; border:0; background:transparent; cursor:pointer;
-    display:grid; place-items:center; font-size:20px; line-height:1; color:#d4d3e0; transition:background .15s, transform .1s;
-  }
-  .dock .dbtn:hover{background:rgba(255,255,255,.08);}
-  .dock .dbtn:active{transform:scale(.92);}
-  .dock .dbtn.sq{background:rgba(255,255,255,.06);}
-  .dock .dbtn svg.i{width:18px; height:18px;}
-  .dock .dbtn.leave svg{transform:scaleX(-1);}
-  .dock .dbtn.leave:hover{background:rgba(255,255,255,.12); color:#fff;}
-
-  @media (max-width:980px){
-    #home{align-items:flex-start; padding-top:40px;}
-    .stage{grid-template-columns:1fr; gap:36px; max-width:520px;}
-    .bg-art{opacity:.25; width:100vw;}
-    .card{width:100%;}
-  }
-  @media (max-width:820px){
-    body.in-room{overflow:auto;}
-    #room{height:auto; min-height:100vh;}
-    .rbody{display:flex; flex-direction:column-reverse;}
-    .side{border-right:0; border-top:1px solid var(--line);}
-    .side-scroll{overflow:visible;}
-    .main{padding:10px 10px 0;}
-    .stagebox{flex:none; height:56vw; min-height:220px;}
-    .dock .share span{display:none;}
-    .dock .share{padding:0 14px;}
-  }
-
-  /* ---------- CONVITE (link com ?sala=) ---------- */
-  #invite{align-items:center; justify-content:center; padding:32px 20px 72px;}
-  .icard{width:100%; max-width:420px; padding:28px 28px 0; text-align:center;}
-  .ibrand{display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:14px; letter-spacing:.28em; margin-bottom:18px;}
-  .ibrand::before{content:""; width:3px; height:16px; border-radius:2px; background:var(--cyan-hi);}
-  .icard h2{font-size:19px; margin:0 0 8px;}
-  .icard .sub{margin:0 auto 16px; max-width:300px;}
-  .icode{display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; color:var(--muted); margin-bottom:22px;}
-  .icode b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-weight:600; letter-spacing:.06em; color:var(--cyan-soft); padding:4px 10px; border-radius:8px; border:1px solid rgba(167,139,250,.4); background:rgba(139,92,246,.10);}
-  .iavatar{display:flex; justify-content:center; margin-bottom:12px;}
-  .iname{font-weight:700; font-size:16px; margin-bottom:14px; min-height:20px; word-break:break-word;}
-  .ipick{display:inline-flex; align-items:center; gap:8px; height:38px; padding:0 16px; border-radius:10px; cursor:pointer; font-size:13.5px; font-weight:500; color:#e2e1ee; background:rgba(255,255,255,.03); border:1px solid var(--line-strong); transition:border-color .15s, background .15s; margin-bottom:22px;}
-  .ipick:hover{border-color:rgba(167,139,250,.5); background:rgba(139,92,246,.08);}
-  .icard .field{text-align:left; margin-bottom:8px;}
-  .ihint{margin:0 0 18px; text-align:left; font-size:12px; color:#6f6d82;}
-  .icard .btn-primary{margin-bottom:18px;}
-  .ifoot{border-top:1px solid var(--line); margin:0 -28px; padding:14px 0;}
-  .iback{display:inline-flex; align-items:center; gap:8px; height:36px; padding:0 16px; border-radius:10px; cursor:pointer; font-size:13px; color:#d4d3e0; background:rgba(255,255,255,.03); border:1px solid var(--line-strong);}
-  .iback:hover{border-color:rgba(167,139,250,.5);}
-  .icard svg.i{width:14px; height:14px;}
-
-
-  .ibtn[hidden]{display:none;}
-  .topbtns{position:absolute; top:14px; right:14px; z-index:5; display:flex; gap:8px;}
-  .tbtn{height:34px; padding:0 12px; border-radius:10px; cursor:pointer; font-size:12.5px; font-weight:600; color:#d4d3e0; background:rgba(255,255,255,.03); border:1px solid var(--line-strong);}
-  .tbtn:hover{border-color:rgba(167,139,250,.5);}
-  .tbtn[hidden]{display:none;}
-  .rname{font-size:13px; color:var(--muted); max-width:30vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .hctl{display:flex; flex-direction:column; gap:8px; margin-bottom:4px;}
-  .hctl .input{height:38px; font-size:13.5px;}
-  .kick{margin-left:auto; width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; color:#9a98ab; font-size:12px; cursor:pointer; flex:none;}
-  .kick:hover{background:rgba(255,255,255,.1); color:#fff;}
-
-  /* ---------- MOBILE ---------- */
-  @media (max-width:980px){
-    #home,#invite{flex-direction:column; justify-content:flex-start; align-items:center; padding:32px 20px calc(28px + env(safe-area-inset-bottom,0px));}
-    #invite{justify-content:center;}
-    .foot{position:static; margin-top:auto; padding-top:32px; pointer-events:auto;}
-    h1.hero-title{font-size:clamp(30px,8vw,42px);}
-  }
-  @media (max-width:820px){
-    #room{min-height:100vh; min-height:100dvh;}
-    .rtop{position:sticky; top:0; z-index:20; padding-left:12px; padding-right:12px; padding-top:env(safe-area-inset-top,0px); flex-basis:auto; min-height:49px;}
-    .rtop-l,.rtop-r{gap:8px; min-width:0;}
-    .chip-code{max-width:44vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-    .stagebox{height:auto; aspect-ratio:16/9; min-height:0; flex:none; border-radius:12px;}
-    .stagectl{top:8px; right:8px; gap:6px;}
-    .dockwrap{padding:12px 0 14px; position:sticky; bottom:0; z-index:15;}
-    .dock{max-width:100%; flex-wrap:wrap; justify-content:center; gap:4px;}
-    .dock .dbtn{width:44px; height:44px;}
-    .dock .sep{margin:0 2px;}
-    .main{padding:10px 10px 0;}
-    .side-foot{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));}
-  }
-  @media (max-width:420px){
-    #home,#invite{padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));}
-    .icard{padding:22px 18px 0;}
-    .ifoot{margin:0 -18px;}
-    .card{padding:18px;}
-    .nickrow{gap:10px;}
-    .joinrow{gap:8px;}
-    .dock .share{padding:0 12px;}
-    .dock .dbtn{width:40px; height:40px;}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .input.invalid{animation:none;}
-    .spin{animation-duration:2.4s;}
-  }
+:root{--bl:#2342ff;--ye:#ffd23f;--ink:#12121a;--pk:#ff4fa3;--bars:linear-gradient(90deg,#fff 0 14.28%,#ffd23f 0 28.57%,#00d1d1 0 42.85%,#2fd35c 0 57.14%,#ff4fa3 0 71.42%,#ff4d3d 0 85.7%,#2342ff 0)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bl);color:#fff;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+button,input{font:inherit}
+:focus-visible{outline:3px solid var(--ye);outline-offset:3px}
+.v{display:none;position:fixed;inset:0}.v.on{display:flex}
+.b{height:44px;padding:0 18px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);font-weight:700;cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .08s,box-shadow .08s;white-space:nowrap}
+.b:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 var(--ink)}.b:disabled{opacity:.5;cursor:not-allowed}
+.b.pri{background:var(--ye)}.b.stop{background:var(--pk)}
+.in{height:44px;padding:0 14px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);min-width:0}
+.logo{font-family:Unbounded,system-ui,sans-serif;font-weight:900}
+/* entrada */
+#home{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;overflow:auto;scroll-behavior:smooth}
+.hero{max-width:560px}
+.hero h1{font-family:Unbounded,system-ui,sans-serif;font-weight:900;font-size:clamp(40px,9vw,84px);line-height:.95;letter-spacing:-.03em;margin:0 0 20px}
+.hero h1 sup{display:inline-block;font-size:.3em;padding:.15em .4em;margin-left:.25em;border:3px solid var(--ink);border-radius:12px;background:var(--ye);color:var(--ink);transform:rotate(-8deg);vertical-align:top}
+.hero p{font-size:19px;max-width:34ch;margin:0 0 26px}
+.strip{height:20px;border:3px solid var(--ink);border-radius:10px;background:var(--bars)}
+.card{width:min(100%,400px);padding:24px;border:3px solid var(--ink);border-radius:24px;background:#fff;color:var(--ink);box-shadow:8px 8px 0 var(--ink)}
+.card label{display:block;margin-bottom:6px;font-weight:700}
+.row{display:flex;gap:10px;margin-bottom:16px}.row .in{flex:1}
+#emoji,#photo{width:44px;padding:0;font-size:22px}
+.card .pri{width:100%}.or{margin:18px 0 14px;text-align:center;font-size:14px;color:#55556a}
+#codeIn{font-family:ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase}
+#hint{margin:0 0 16px;padding:8px 12px;border:3px solid var(--ink);border-radius:12px;background:var(--ye);font-weight:600}
+/* sala */
+#room{flex-direction:column}
+.bar{display:flex;align-items:center;gap:10px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}
+.bar .logo{font-size:18px}.sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:3px solid var(--ink);border-radius:99px;background:#fff;color:var(--ink);font-size:13px;font-weight:700}
+button.chip{background:var(--ye);cursor:pointer}
+.conn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700}.conn i{width:10px;height:10px;border-radius:50%;border:2px solid var(--ink);background:#5dff9a}
+.conn.wait i{background:var(--ye)}.conn.bad i{background:var(--pk)}
+.deck{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;padding:0 16px}
+#stage{position:relative;flex:1;min-height:0;overflow:hidden;border:8px solid var(--ink);border-radius:28px;background:#000;box-shadow:8px 8px 0 var(--ink)}
+#screens{position:absolute;inset:0;display:grid;grid-template-columns:repeat(var(--c,1),1fr);gap:4px;background:#000}
+.scr{display:none;position:relative;min-height:0;background:#000}.scr.cur,#screens.mos .scr{display:block}
+.scr video{width:100%;height:100%;object-fit:contain;background:#000}
+.scr .tw{position:absolute;inset:0;display:grid;place-items:center;background:#000;color:#fff}
+.scr .lb{display:none}#screens.mos .lb{display:block;position:absolute;left:8px;bottom:8px;padding:2px 8px;border-radius:8px;background:var(--ink);font-size:12px;font-weight:700}
+#empty{position:absolute;inset:0;z-index:2;background:#000}
+#empty .bars{height:72%;background:var(--bars)}
+.nosig{position:absolute;left:0;right:0;bottom:0;height:28%;display:grid;place-content:center;padding:8px;text-align:center;background:#111}
+.nosig b{font-family:Unbounded,system-ui,sans-serif;font-size:clamp(14px,3vw,22px)}
+.hud{position:absolute;z-index:3;left:12px;right:12px;top:12px;display:flex;gap:8px;align-items:center;pointer-events:none}
+.hud>*{pointer-events:auto}
+#liveTag{padding:2px 9px;border:2px solid #000;border-radius:8px;background:var(--pk);font-size:12px;font-weight:800}
+#chtag{padding:2px 10px;border-radius:8px;background:var(--ink);font-size:13px;font-weight:700}
+#fs{margin-left:auto;width:34px;height:34px;border:2px solid #000;border-radius:10px;background:#fff;color:var(--ink);cursor:pointer;font-weight:800}
+#feed{position:absolute;z-index:4;left:0;right:0;bottom:14px;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+.cap{max-width:88%;padding:3px 10px;border-radius:4px;background:#000c;color:#fff;font-size:clamp(14px,2.4vw,20px);text-align:center;word-break:break-word}
+.cap b{margin-right:6px;color:var(--ye)}
+.fl{position:absolute;z-index:4;bottom:16px;font-size:38px;pointer-events:none;animation:up 2.2s ease-out forwards}
+@keyframes up{to{transform:translateY(-260px) scale(1.2);opacity:0}}
+.chn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 5px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font-weight:700;white-space:nowrap;cursor:pointer}
+.chn i{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--ink);color:#fff;font-size:13px;font-style:normal}
+.chn.cur{background:var(--ye)}.chn.mo{padding:0 14px}
+.pill{display:flex;align-items:center;gap:8px;padding:3px 12px 3px 3px;border:3px solid var(--ink);border-radius:99px;background:#fff;color:var(--ink);font-size:13px;font-weight:700;white-space:nowrap}
+.pill .av{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:hsl(var(--h) 80% 78%);font-size:15px}
+.pill.live{background:var(--ye);cursor:pointer}
+#dock{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 16px;margin-bottom:max(14px,env(safe-area-inset-bottom));padding:10px;border:3px solid var(--ink);border-radius:20px;background:rgba(18,18,26,.22)}
+#dock .in{flex:1 1 160px}.rx{width:44px;padding:0;font-size:20px}
+.toast{position:fixed;left:50%;bottom:112px;z-index:99;max-width:90vw;padding:10px 16px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font-weight:600;opacity:0;pointer-events:none;transform:translate(-50%,16px);transition:.2s}
+.toast.on{opacity:1;transform:translate(-50%,0)}.toast.err{background:var(--pk)}
+/* sala em colunas */
+.rbody{flex:1;min-height:0;display:grid;grid-template-columns:300px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"side deck" "side dock";column-gap:16px;padding:0 16px}
+.side{grid-area:side;display:flex;flex-direction:column;gap:14px;min-height:0;overflow-y:auto;padding:2px 2px 14px;scrollbar-width:none}
+.deck{grid-area:deck;padding:0}
+#dock{grid-area:dock;justify-self:center;width:min(100%,780px);margin:12px 0;margin-bottom:max(14px,env(safe-area-inset-bottom))}
+.sc{display:flex;flex-direction:column;gap:10px;padding:14px;border:3px solid var(--ink);border-radius:20px;background:rgba(18,18,26,.22)}
+.sc h3{margin:0;font-size:13px;font-weight:800}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:32px}
+.sh .chn{height:32px;padding:0 12px;font-size:13px}
+.codebig{font-family:ui-monospace,Menlo,monospace;font-size:24px;font-weight:800;letter-spacing:.14em}
+.sc>.b{width:100%}
+.plist{display:flex;flex-direction:column;gap:8px}
+.plist:empty::after{content:attr(data-empty);font-size:13px;opacity:.85}
+.pc{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);text-align:left;font-weight:700}
+button.pc{cursor:pointer}.pc.cur{background:var(--ye)}
+.pc .av,.me .av{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);background:hsl(var(--h,40) 80% 78%);font-size:19px}
+.pc.sm{padding:4px 10px 4px 4px}.pc.sm .av{width:30px;height:30px;font-size:16px}
+.pt{display:flex;flex-direction:column;min-width:0}.pt b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pt small{font-size:12px;font-weight:600;color:#55556a}
+.me{display:flex;align-items:center;gap:10px;margin-top:auto;padding:10px;border:3px solid var(--ink);border-radius:16px;background:#fff;color:var(--ink);font-size:13px;font-weight:600}
+.me b{overflow-wrap:anywhere}
+#screens.mos{gap:8px;padding:8px}
+#screens.mos .scr{border-radius:16px;overflow:hidden;outline:3px solid rgba(255,255,255,.22)}
+.dg{display:flex;align-items:center;gap:8px}
+.rxs{padding:0 12px;border-inline:3px solid var(--ink)}
+.irow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ph{background-size:cover!important;background-position:center!important;font-size:0!important}
+@media (min-width:900px){#copy{display:none}}
+@media (max-width:899px){
+#room{overflow-y:auto}
+.rbody{flex:1 0 auto;display:flex;flex-direction:column;gap:12px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+.deck{order:1;flex:none}#stage{flex:none;aspect-ratio:16/9;min-height:0}
+#dock{order:2;width:100%;margin:0}
+.side{order:3;overflow:visible;padding:0}.me{margin-top:0}
+}
+@media (max-width:700px){
+.bar .logo,.bar .chip{white-space:nowrap}.bar{gap:8px}#connTxt{display:none}
+#dock{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"share share leave" "rx chat chat";gap:10px;align-items:center}
+#dock>.dg:first-child{grid-area:share}#dock>.dg:first-child .b{width:100%}
+.rxs{grid-area:rx;padding:0;border:0}#dock .in{grid-area:chat;min-width:0}
+#dock>.dg:last-child{grid-area:leave}
+}
+/* convite */
+#invite{align-items:center;justify-content:center;padding:20px;overflow:auto;isolation:isolate}
+.pulse{position:absolute;left:0;right:0;top:50%;width:100%;height:200px;transform:translateY(-50%);z-index:-1;pointer-events:none;opacity:.35}
+.pulse path{fill:none;stroke:#fff;stroke-width:3;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.icard{width:min(100%,420px);margin:auto;border:3px solid var(--ink);border-radius:24px;background:#fff;color:var(--ink);box-shadow:8px 8px 0 var(--ink);overflow:hidden}
+.isec{padding:22px 24px}.isec+.isec{border-top:3px solid var(--ink)}
+.ihead,.ipick,.iback{text-align:center}
+.ihead .logo{display:inline-flex;align-items:center;gap:10px;font-size:16px}
+.ihead .logo::before{content:"";width:8px;height:22px;border:3px solid var(--ink);border-radius:4px;background:var(--ye)}
+.ihead h2{margin:14px 0 6px;font-size:22px}
+.ihead p{margin:0 auto 14px;max-width:32ch;color:#55556a}
+.iroom{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+.chip.ye{background:var(--ye)}#invCode{font-family:ui-monospace,Menlo,monospace;letter-spacing:.1em}
+.big{display:grid;place-items:center;width:84px;height:84px;margin:0 auto 10px;border:3px solid var(--ink);border-radius:50%;background:hsl(var(--h,40) 80% 78%);font-size:44px}
+#invName{display:block;margin-bottom:14px;font-size:18px;font-weight:800;overflow-wrap:anywhere}
+.eg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}.eg .b{width:100%;padding:0;font-size:22px}
+.ifield .lr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.ifield label{font-weight:700}.ifield .n{font-size:13px;color:#55556a}
+.ifield .in{width:100%}.ifield small{display:block;margin:8px 0 16px;color:#55556a;font-size:13px}
+#invGo{width:100%;height:48px}
+.lang{display:inline-flex;border:3px solid var(--ink);border-radius:99px;background:#fff;overflow:hidden}
+.lang button{height:28px;min-width:38px;padding:0 10px;border:0;background:transparent;color:var(--ink);font-weight:800;font-size:13px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ye)}
+.hs1{position:relative;flex:none;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;padding:max(62px,calc(env(safe-area-inset-top) + 50px)) 20px 20px}
+@media (prefers-reduced-motion:reduce){#home{scroll-behavior:auto}}
+.hs2{flex:none;display:flex;justify-content:center;padding:24px 20px max(72px,calc(env(safe-area-inset-bottom) + 48px))}
+.dlcard{display:flex;align-items:center;gap:32px;width:100%;max-width:860px;padding:32px;border:3px solid var(--ink);border-radius:28px;background:#fff;color:var(--ink);box-shadow:10px 10px 0 var(--ink)}
+.dlcard img{flex:none;width:120px;height:120px;border:3px solid var(--ink);border-radius:28px;box-shadow:5px 5px 0 var(--ink)}
+.dlbody{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.dlcard h2{margin:0;font-family:Unbounded,system-ui,sans-serif;font-weight:900;font-size:clamp(24px,4vw,34px);line-height:1.05;letter-spacing:-.02em}
+.dlcard p{margin:0;max-width:46ch}.dlnote{font-size:13px;color:#55556a}
+#dlBtn{height:54px;padding:0 28px;font-size:16px}#dlBtn::before{content:"↓";font-weight:900;margin-right:8px}
+@media (max-width:640px){.dlcard{flex-direction:column;align-items:flex-start;gap:20px;padding:24px}.dlcard img{width:88px;height:88px;border-radius:22px}}
+.instfix{position:absolute;top:max(14px,env(safe-area-inset-top));left:16px;z-index:5}
+.inst::before{content:"↓";font-weight:900}
+#invite{padding-top:max(62px,calc(env(safe-area-inset-top) + 50px))}
+.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(18,18,26,.6)}
+.mcard{width:min(100%,380px);padding:24px;border:3px solid var(--ink);border-radius:24px;background:#fff;color:var(--ink);box-shadow:8px 8px 0 var(--ink)}
+.mcard h2{margin:0 0 12px;font-size:20px}.mcard ol{margin:0 0 18px;padding-left:22px;display:grid;gap:8px}.mcard p{margin:0 0 18px}.mcard .b{width:100%}
+.langfix{position:absolute;top:max(14px,env(safe-area-inset-top));right:16px;z-index:5}
+@media (max-width:560px){.bar #cnt,#copy{display:none}.b{padding:0 12px}}
 </style>
 </head>
 <body>
-
-<div class="bg" aria-hidden="true">
-  <div class="ekg-wrap"><div class="ekg-track" id="ekgTrack"></div></div>
-  <div class="bg-art"></div>
-</div>
-
-<!-- ================= HOME ================= -->
-<main class="view on" id="home">
-  <div class="topbtns"><button class="tbtn installBtn" type="button" hidden>Instalar app</button><button class="tbtn langBtn" type="button" aria-label="Language">EN</button></div>
-  <div class="stage">
-    <section>
-      <div class="brandline">
-        <span class="name">SCREEN</span>
-      </div>
-      <h1 class="hero-title">Sua tela.<br><em>Em tempo real.</em></h1>
-      <p class="hero-sub">Compartilhe sua tela instantaneamente, direto pelo navegador. Crie uma sala, envie o link e comece a transmitir.</p>
-
-      <ul class="feats">
-        <li><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>Crie uma sala em poucos segundos</li>
-        <li><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>Compartilhe por link ou código</li>
-        <li><span class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.4c1.9.9 3 2.8 3 5.6"/></svg></span>Várias pessoas podem transmitir ao mesmo tempo</li>
-      </ul>
-    </section>
-
-    <section class="card" aria-labelledby="enterTitle">
-      <h2 id="enterTitle">Entrar</h2>
-      <p class="sub">Escolha um nickname para ser identificado na sala.</p>
-
-      <div class="nickrow">
-        <button class="avatar-btn" id="avatarBtn" type="button" aria-label="Trocar avatar" aria-haspopup="dialog">
-          <span id="avatarSlot"></span>
-          <span class="avatar-badge"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></span>
-        </button>
-        <div class="field">
-          <div class="field-head">
-            <label class="lbl" for="nick">Nickname</label>
-            <span class="count" id="nickCount">0/24</span>
-          </div>
-          <input class="input" id="nick" type="text" maxlength="24" placeholder="Seu nome na sala" autocomplete="off" autocapitalize="words" spellcheck="false">
-        </div>
-      </div>
-
-      <button class="btn btn-primary" id="createBtn" type="button">
-        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        <span id="createLbl">Criar sala</span>
-      </button>
-
-      <div class="or">OU</div>
-
-      <label class="lbl" for="code">Codigo da sala</label>
-      <div class="joinrow">
-        <input class="input" id="code" type="text" inputmode="text" maxlength="9" placeholder="XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
-        <button class="btn btn-secondary" id="joinBtn" type="button" disabled>
-          <span id="joinLbl">Entrar</span>
-          <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-      </div>
-    </section>
+<div id="home" class="v on">
+  <button class="chip inst instfix" type="button" data-i="install" hidden>Instalar app</button>
+  <div class="lang langfix" role="group" aria-label="Idioma / Language"><button type="button" data-l="pt" aria-pressed="true">PT</button><button type="button" data-l="en" aria-pressed="false">EN</button></div>
+  <div class="hs1">
+  <section class="hero">
+    <h1>SCREEN<sup>2.0</sup></h1>
+    <p data-i="heroP">Sua tela no ar. Abra uma sala, mande o código e todo mundo assiste junto, com o chat virando legenda ao vivo.</p>
+    <div class="strip"></div>
+  </section>
+  <main class="card">
+    <div id="hint" hidden></div>
+    <label for="nick" data-i="yourName">Seu nome</label>
+    <div class="row"><input class="in" id="nick" maxlength="24" placeholder="Como te chamam?" data-ip="nickPh" autocomplete="off"><button class="b" id="emoji" type="button" title="Trocar emoji" data-it="emojiT"></button><button class="b" id="photo" type="button" title="Foto da galeria" aria-label="Escolher foto da galeria" data-it="photoT" data-ia="photoA">📷</button></div>
+    <input type="file" id="file" accept="image/*" hidden>
+    <button class="b pri" id="create" type="button">Abrir sala</button>
+    <div class="or" data-i="or">ou entre numa sala que já está no ar</div>
+    <div class="row" style="margin:0"><input class="in" id="codeIn" maxlength="9" placeholder="XXXX-XXXX" autocomplete="off" aria-label="Código da sala" data-ia="codeLbl"><button class="b" id="join" type="button" disabled data-i="join">Entrar</button></div>
+  </main>
   </div>
-</main>
-
-<!-- ================= CONVITE ================= -->
-<main class="view" id="invite">
-  <div class="topbtns"><button class="tbtn installBtn" type="button" hidden>Instalar app</button><button class="tbtn langBtn" type="button" aria-label="Language">EN</button></div>
-  <section class="card icard" aria-labelledby="invTitle">
-    <div class="ibrand">SCREEN</div>
-    <h2 id="invTitle">Antes de entrar</h2>
-    <p class="sub">Escolha como voce vai aparecer para os outros participantes.</p>
-    <div class="icode">Sala <b id="inviteCode">----</b></div>
-    <div class="iavatar"><span id="inviteAvSlot"></span></div>
-    <div class="iname" id="inviteName"></div>
-    <button class="ipick" id="inviteAvBtn" type="button" aria-haspopup="dialog">
-      <svg class="i" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-      Escolher avatar
-    </button>
-    <div class="field">
-      <div class="field-head">
-        <label class="lbl" for="inick">Nickname</label>
-        <span class="count" id="inickCount">0/24</span>
+  <section class="hs2" id="dl">
+    <div class="dlcard">
+      <img src="icon-192.png" alt="" width="120" height="120">
+      <div class="dlbody">
+        <h2 data-i="dlTitle">Leve o SCREEN com você</h2>
+        <p data-i="dlText">Instale o SCREEN no celular ou no computador e abra uma sala com um toque, direto da tela inicial.</p>
+        <button class="b pri" id="dlBtn" type="button" data-i="dlBtn">Baixar aplicativo</button>
+        <span class="dlnote" data-i="dlNote">Disponível para Android, iPhone, iPad e computador.</span>
       </div>
-      <input class="input" id="inick" type="text" maxlength="24" placeholder="Seu nome na sala" autocomplete="off" autocapitalize="words" spellcheck="false">
-    </div>
-    <p class="ihint">Esse nome fica visivel para todos na sala.</p>
-    <button class="btn btn-primary" id="inviteJoin" type="button">
-      <span id="inviteJoinLbl">Entrar na sala</span>
-      <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </button>
-    <div class="ifoot">
-      <button class="iback" id="inviteBack" type="button">
-        <svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-        Voltar ao inicio
-      </button>
     </div>
   </section>
-</main>
-
-<!-- ================= SALA ================= -->
-<main class="view" id="room">
-  <header class="rtop">
-    <div class="rtop-l">
-      <span class="rbrand">SCREEN</span>
-      <span class="rname" id="roomNameTop" hidden></span>
-      <button class="chip chip-code" id="chipCode" type="button" title="Copiar link do convite">
-        <svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
-        <span id="chipCodeTxt">----</span>
-      </button>
-    </div>
-    <div class="rtop-r">
-      <span class="chip" title="Pessoas na sala">
-        <svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.4c1.9.9 3 2.8 3 5.6"/></svg>
-        <span id="rCount">1</span>
-      </span>
-      <span class="conn" id="connState"><i></i><span id="connTxt">Conectado</span></span>
-    </div>
-  </header>
-
-  <div class="rbody">
-    <aside class="side">
-      <div class="side-scroll">
-        <div class="codecard">
-          <div class="lbl">Codigo da sala</div>
-          <div class="codecard-row">
-            <span class="codebig" id="sideCode">----</span>
-            <button class="mini" id="sideCopy" type="button" aria-label="Copiar codigo">
-              <svg class="i" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            </button>
-          </div>
-          <button class="btn-outline" id="sideLink" type="button">
-            <svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
-            Copiar link do convite
-          </button>
-        </div>
-        <div class="side-sep"></div>
-
-        <div id="hostCtl" hidden>
-          <div class="sechead">Controles do anfitrião</div>
-          <div class="hctl">
-            <input class="input" id="roomNameIn" maxlength="30" placeholder="Nome da sala" autocomplete="off">
-            <button class="btn-outline" id="lockBtn" type="button"><span id="lockTxt">Trancar sala</span></button>
-          </div>
-          <div class="side-sep"></div>
-        </div>
-
-        <div id="txWrap" hidden>
-          <div class="sechead">Transmitindo &mdash; <span id="nTx">0</span></div>
-          <div id="listTx"></div>
-        </div>
-        <div class="sechead">Na sala &mdash; <span id="nIn">0</span></div>
-        <div id="listIn"></div>
-      </div>
-      <div class="side-foot">
-        <button class="mepill" id="mePill" type="button" aria-haspopup="dialog">
-          <span id="meAv"></span>
-          <span class="mtxt">Voce entrou como <b id="meNick"></b></span>
-          <svg class="i" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-        </button>
-      </div>
-    </aside>
-
-    <section class="main">
-      <div class="stagebox" id="stagebox">
-        <div class="viewport" id="viewport"><video id="rvideo" autoplay playsinline></video></div>
-        <div class="reacts" id="reacts"></div>
-
-        <div class="stagectl">
-          <button class="ibtn" id="pipBtn" type="button" aria-label="Modo flutuante" title="Modo flutuante">
-            <svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><rect x="12" y="11" width="7" height="5" rx="1" fill="currentColor"/></svg>
-          </button>
-          <button class="ibtn" id="zOut" type="button" aria-label="Diminuir zoom" title="Diminuir zoom" disabled>
-            <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg>
-          </button>
-          <button class="ibtn" id="zIn" type="button" aria-label="Aumentar zoom" title="Aumentar zoom" disabled>
-            <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg>
-          </button>
-          <button class="ibtn" id="fsTop" type="button" aria-label="Tela cheia" title="Tela cheia">
-            <svg class="i fs-in" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-            <svg class="i fs-out" viewBox="0 0 24 24" hidden><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>
-          </button>
-        </div>
-
-        <div class="who" id="who" hidden>
-          <i></i>
-          <svg class="crown" id="whoCrown" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z"/></svg>
-          <span id="whoName"></span>
-        </div>
-
-        <div class="overlay" id="ov">
-          <div class="ov-in">
-            <div class="ov-ic" id="ovIc"></div>
-            <div class="ov-t" id="ovT"></div>
-            <div class="ov-s" id="ovS"></div>
-            <button class="btn btn-secondary" id="ovPlay" type="button" hidden>Clique para assistir</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="dockwrap">
-        <div class="dock" role="toolbar" aria-label="Controles da sala">
-          <button class="share" id="shareBtn" type="button" aria-pressed="false">
-            <svg class="i" id="shareIc" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m9 10 3-3 3 3M12 7v6"/></svg>
-            <span id="shareTxt">Compartilhar tela</span>
-          </button>
-          <span class="sep"></span>
-          <button class="dbtn react-btn" type="button" data-e="🔨" aria-label="Reagir com martelo" title="Martelo">🔨</button>
-          <button class="dbtn react-btn" type="button" data-e="👍" aria-label="Reagir com joinha" title="Joinha">👍</button>
-          <button class="dbtn react-btn" type="button" data-e="❤️" aria-label="Reagir com coracao" title="Coracao">❤️</button>
-          <span class="sep"></span>
-          <button class="dbtn sq" id="fsDock" type="button" aria-label="Tela cheia" title="Tela cheia">
-            <svg class="i fs-in" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-            <svg class="i fs-out" viewBox="0 0 24 24" hidden><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>
-          </button>
-          <span class="sep"></span>
-          <button class="dbtn leave" id="leaveBtn" type="button" aria-label="Sair da sala" title="Sair da sala">
-            <svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
-          </button>
-        </div>
-      </div>
-    </section>
-  </div>
-</main>
-
-<!-- Painel de avatar (usado na home e na sala) -->
-<div class="apanel" id="apanel" role="dialog" aria-label="Seu avatar" hidden>
-  <div class="apanel-head">
-    <span class="lbl">Seu avatar</span>
-    <button class="xbtn" id="apClose" type="button" aria-label="Fechar">
-      <svg class="i" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg>
-    </button>
-  </div>
-  <div class="apanel-grid" id="apGrid"></div>
-  <div class="apanel-foot">
-    <div class="lbl">
-      <svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
-      Ou use uma imagem por link
-    </div>
-    <div class="aprow">
-      <input class="input" id="apUrl" type="url" placeholder="https://.../minha-foto.png" autocomplete="off" spellcheck="false">
-      <button class="btn" id="apUse" type="button">Usar</button>
-    </div>
-    <div class="aperr" id="apErr" role="alert"></div>
-  </div>
 </div>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="invite" class="v">
+  <button class="chip inst instfix" type="button" data-i="install" hidden>Instalar app</button>
+  <div class="lang langfix" role="group" aria-label="Idioma / Language"><button type="button" data-l="pt" aria-pressed="true">PT</button><button type="button" data-l="en" aria-pressed="false">EN</button></div>
+  <svg class="pulse" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100H420L440 70L470 100H700L730 20L770 170L805 70L835 100H1200"/></svg>
+  <main class="icard" aria-labelledby="invTitle">
+    <section class="isec ihead">
+      <span class="logo">SCREEN 2.0</span>
+      <h2 id="invTitle" data-i="preTitle">Antes de entrar</h2>
+      <p data-i="preSub">Escolha como você vai aparecer para os outros participantes.</p>
+      <div class="iroom"><span data-i="roomWord">Sala</span> <span class="chip ye" id="invCode">----</span></div>
+    </section>
+    <section class="isec ipick">
+      <div class="big" id="invAv"></div>
+      <b id="invName">Seu nome</b>
+      <div class="irow"><button class="b" id="invPick" type="button" aria-expanded="false" aria-controls="invGrid" data-i="pickAv">Escolher avatar</button><button class="b" id="invPhoto" type="button" data-i="gallery">Foto da galeria</button></div>
+      <div class="eg" id="invGrid" hidden></div>
+    </section>
+    <section class="isec ifield">
+      <div class="lr"><label for="invNick" data-i="yourName">Seu nome</label><span class="n" id="invCnt">0/24</span></div>
+      <input class="in" id="invNick" maxlength="24" placeholder="Como te chamam?" data-ip="nickPh" autocomplete="off">
+      <small data-i="nameHelp">Esse nome fica visível para todos na sala.</small>
+      <button class="b pri" id="invGo" type="button"><span id="invGoTxt">Entrar na sala</span> →</button>
+    </section>
+    <section class="isec iback"><button class="b" id="invBack" type="button" data-i="back">← Voltar ao início</button></section>
+  </main>
+</div>
 
+<div id="room" class="v">
+  <header class="bar">
+    <span class="logo">SCREEN 2.0</span>
+    <button class="chip" id="copy" type="button" title="Copiar link do convite" data-it="copyInvite"><span id="codeTxt">----</span> <span data-i="copyLink">Copiar link</span></button>
+    <span class="sp"></span>
+    <div class="lang" role="group" aria-label="Idioma / Language"><button type="button" data-l="pt" aria-pressed="true">PT</button><button type="button" data-l="en" aria-pressed="false">EN</button></div>
+    <span class="chip" id="cnt">1 pessoa</span>
+    <span class="conn" id="conn"><i></i><span id="connTxt">Conectado</span></span>
+  </header>
+  <div class="rbody">
+    <aside class="side">
+      <section class="sc">
+        <h3 data-i="codeLbl">Código da sala</h3>
+        <span class="codebig" id="codeBig">----</span>
+        <button class="b" id="copy2" type="button" data-i="copyInvite">Copiar link do convite</button>
+      </section>
+      <section class="sc">
+        <div class="sh"><h3 id="liveH">Transmitindo — 0</h3><button class="chn mo" id="mosBtn" type="button" data-i="mosaic" hidden>Mosaico</button></div>
+        <div class="plist" id="chs"></div>
+      </section>
+      <section class="sc">
+        <h3 id="roomH">Na sala — 0</h3>
+        <div class="plist" id="people"></div>
+      </section>
+      <div class="me"><span class="av" id="meAv"></span><span><span data-i="joinedAs">Você entrou como</span> <b id="meName">-</b></span></div>
+    </aside>
+    <main class="deck">
+      <div id="stage">
+        <div id="screens"></div>
+        <div id="empty"><div class="bars"></div><div class="nosig"><div><b data-i="noSig">Sem sinal</b><br><span data-i="noSigSub">Toque em Compartilhar tela para entrar no ar.</span></div></div></div>
+        <div class="hud"><span id="liveTag" data-i="liveTag" hidden>AO VIVO</span><span id="chtag" hidden></span><button id="fs" type="button" aria-label="Tela cheia" title="Tela cheia" data-ia="fs" data-it="fs">⛶</button></div>
+        <div id="feed"></div>
+      </div>
+    </main>
+    <footer id="dock">
+      <div class="dg"><button class="b pri" id="share" type="button">Compartilhar tela</button></div>
+      <div class="dg rxs">
+        <button class="b rx" data-e="🔥" type="button" aria-label="Reagir com fogo" data-ia="rxFire">🔥</button>
+        <button class="b rx" data-e="👏" type="button" aria-label="Reagir com palmas" data-ia="rxClap">👏</button>
+        <button class="b rx" data-e="❤️" type="button" aria-label="Reagir com coração" data-ia="rxHeart">❤️</button>
+      </div>
+      <input class="in" id="chat" maxlength="140" placeholder="Escreva e dê Enter" data-ip="chatPh" autocomplete="off" aria-label="Mensagem" data-ia="chatLbl">
+      <div class="dg"><button class="b" id="leave" type="button" data-i="leave">Sair</button></div>
+    </footer>
+  </div>
+</div>
+<div class="modal" id="iosM" role="dialog" aria-modal="true" aria-labelledby="iosT" hidden>
+  <div class="mcard"><h2 id="iosT"></h2>
+    <ol id="iosL"><li></li><li></li><li></li></ol><p id="iosP" hidden></p>
+    <button class="b pri" id="iosOk" type="button" data-i="gotIt">Entendi</button></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
 <script>
 (() => {
-  'use strict';
+'use strict';
+const $ = i => document.getElementById(i);
+const AL = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', EM = ['🦊','🐸','🐧','🐙','🦉','🐼','🐯','🦁','🐨','🐰','🐵','🐶','🐱','🦄','🐢','🦖','🐝','🦋','🐳','👾'], RE = ['🔥','👏','❤️'];
+const MAX = 10, PFX = 'sala2-';
+// Para redes difíceis (4G, NAT simétrico) adicione um servidor TURN aqui:
+const ICE = [{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'} /*, {urls:'turn:SEU_TURN',username:'',credential:''} */];
+const OPT = {config:{iceServers:ICE}};
+const st = {get:k=>{try{return localStorage.getItem(k)}catch{return null}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}};
 
-  /* =====================================================
-     CONFIG
-     ===================================================== */
-  const NICK_MAX = 24;
-  const JOIN_TIMEOUT_MS = 9000;
-  const MAX_PEOPLE = 10;
-  // Cole aqui o seu ID de usuario do Discord (so os numeros)
-  const DISCORD_ID = 'SEU_ID_AQUI';
-  const DISCORD_WEB = 'https://discord.com/users/' + DISCORD_ID;
-  const DISCORD_APP = 'discord://-/users/' + DISCORD_ID;
-  const IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  document.querySelectorAll('a.dev').forEach(a => {
-    a.href = DISCORD_WEB; // celular: o link https ja abre o app do Discord se ele estiver instalado
-    a.addEventListener('click', (e) => {
-      if (IS_MOBILE) return;
-      // computador: tenta abrir o app direto; se nao abrir, cai para o navegador
-      e.preventDefault();
-      location.href = DISCORD_APP;
-      setTimeout(() => {
-        if (document.visibilityState === 'visible' && document.hasFocus()) window.open(DISCORD_WEB, '_blank', 'noopener');
-      }, 1800);
-    });
-  });
-  const ROOM_PREFIX = 'smith-';
-  // Sem 0/O/1/I para o codigo nao ser confundido ao ditar/ler.
-  const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const REACTIONS = ['🔨', '👍', '❤️'];
-  const MAX_ZOOM = 5;
+let lang = st.get('m2.lang'); if(lang!=='pt'&&lang!=='en') lang = /^pt/i.test(navigator.language||'') ? 'pt' : 'en';
+const L = {
+pt:{dlTitle:"Leve o SCREEN com você",dlText:"Instale o SCREEN no celular ou no computador e abra uma sala com um toque, direto da tela inicial.",dlBtn:"Baixar aplicativo",dlNote:"Disponível para Android, iPhone, iPad e computador.",otherTitle:"Instalar o aplicativo",otherS1:"Abra o SCREEN no Chrome ou no Edge.",otherS2:"Clique no ícone de instalar na barra de endereço, ou abra o menu e escolha Instalar app.",otherS3:"Confirme em Instalar.",fileTitle:"Instalação indisponível aqui",fileMsg:"Para instalar, o SCREEN precisa estar publicado em um endereço https. Abrindo o arquivo direto do computador, o navegador não libera a instalação.",install:"Instalar app",installed:"App instalado.",iosTitle:"Instalar no iPhone ou iPad",iosS1:"Toque em Compartilhar, na barra do Safari.",iosS2:"Escolha Adicionar à Tela de Início.",iosS3:"Toque em Adicionar.",gotIt:"Entendi",title:"SCREEN 2.0 · Sua tela no ar",heroP:"Sua tela no ar. Abra uma sala, mande o código e todo mundo assiste junto, com o chat virando legenda ao vivo.",yourName:"Seu nome",nickPh:"Como te chamam?",emojiT:"Trocar emoji",photoT:"Foto da galeria",photoA:"Escolher foto da galeria",create:"Abrir sala",wait:"Aguarde...",or:"ou entre numa sala que já está no ar",codeLbl:"Código da sala",join:"Entrar",preTitle:"Antes de entrar",preSub:"Escolha como você vai aparecer para os outros participantes.",roomWord:"Sala",pickAv:"Escolher avatar",gallery:"Foto da galeria",nameHelp:"Esse nome fica visível para todos na sala.",enterRoom:"Entrar na sala",back:"← Voltar ao início",copyLink:"Copiar link",copyInvite:"Copiar link do convite",people:n=>n===1?"1 pessoa":n+" pessoas",connected:"Conectado",reconnecting:"Reconectando",noConn:"Sem conexão",liveH:n=>"Transmitindo — "+n,mosaic:"Mosaico",roomH:n=>"Na sala — "+n,empty:"Ninguém por aqui.",joinedAs:"Você entrou como",noSig:"Sem sinal",noSigSub:"Toque em Compartilhar tela para entrar no ar.",liveTag:"AO VIVO",fs:"Tela cheia",rxFire:"Reagir com fogo",rxClap:"Reagir com palmas",rxHeart:"Reagir com coração",chatPh:"Escreva e dê Enter",chatLbl:"Mensagem",leave:"Sair",share:"Compartilhar tela",stopShare:"Parar transmissão",sharing:"Compartilhando tela",you:"Você",youP:"(você)",guest:"Convidado",tuning:"Sintonizando...",needName:"Escolha um nome para entrar.",noPeer:"Não foi possível carregar o PeerJS. Verifique a internet.",codeFull:"Digite o código completo (XXXX-XXXX).",openFail:"Não foi possível abrir a sala. Tente de novo.",notFound:"Sala não encontrada. Confira o código.",full:n=>"Sala cheia (máximo de "+n+" pessoas).",connFail:"Falha ao conectar na sala.",netFail:"Falha de conexão. Tente de novo.",hostEnded:"A sala foi encerrada pelo anfitrião.",copied:"Link do convite copiado.",copyFail:"Não foi possível copiar o link.",tapSound:"Toque na tela para ativar o som.",fsNo:"Tela cheia indisponível neste navegador.",noShare:"Este navegador não suporta compartilhar tela.",shareFail:"Não foi possível compartilhar a tela.",notImg:"Escolha um arquivo de imagem.",avSet:"Foto definida como avatar.",imgFail:"Não foi possível usar essa imagem.",confirmLeave:"Você é o anfitrião. Sair encerra a sala para todos. Continuar?"},
+en:{dlTitle:"Take SCREEN with you",dlText:"Install SCREEN on your phone or computer and open a room with one tap, straight from your home screen.",dlBtn:"Download app",dlNote:"Available for Android, iPhone, iPad and desktop.",otherTitle:"Install the app",otherS1:"Open SCREEN in Chrome or Edge.",otherS2:"Click the install icon in the address bar, or open the menu and choose Install app.",otherS3:"Confirm by clicking Install.",fileTitle:"Installation unavailable here",fileMsg:"To install, SCREEN must be served from an https address. When the file is opened straight from your computer, the browser does not allow installation.",install:"Install app",installed:"App installed.",iosTitle:"Install on iPhone or iPad",iosS1:"Tap Share in the Safari toolbar.",iosS2:"Choose Add to Home Screen.",iosS3:"Tap Add.",gotIt:"Got it",title:"SCREEN 2.0 · Your screen, live",heroP:"Your screen, live. Open a room, send the code and everyone watches together, with the chat turning into live captions.",yourName:"Your name",nickPh:"What should we call you?",emojiT:"Change emoji",photoT:"Photo from gallery",photoA:"Choose a photo from your gallery",create:"Open room",wait:"Please wait...",or:"or join a room that is already live",codeLbl:"Room code",join:"Join",preTitle:"Before you join",preSub:"Choose how you will appear to the other participants.",roomWord:"Room",pickAv:"Choose avatar",gallery:"Photo from gallery",nameHelp:"This name is visible to everyone in the room.",enterRoom:"Join room",back:"← Back to start",copyLink:"Copy link",copyInvite:"Copy invite link",people:n=>n===1?"1 person":n+" people",connected:"Connected",reconnecting:"Reconnecting",noConn:"Disconnected",liveH:n=>"Streaming — "+n,mosaic:"Grid",roomH:n=>"In the room — "+n,empty:"No one here.",joinedAs:"You joined as",noSig:"No signal",noSigSub:"Tap Share screen to go live.",liveTag:"LIVE",fs:"Fullscreen",rxFire:"React with fire",rxClap:"React with clapping",rxHeart:"React with heart",chatPh:"Type and press Enter",chatLbl:"Message",leave:"Leave",share:"Share screen",stopShare:"Stop streaming",sharing:"Sharing screen",you:"You",youP:"(you)",guest:"Guest",tuning:"Tuning in...",needName:"Choose a name to join.",noPeer:"Could not load PeerJS. Check your internet connection.",codeFull:"Enter the full code (XXXX-XXXX).",openFail:"Could not open the room. Try again.",notFound:"Room not found. Check the code.",full:n=>"Room is full (maximum "+n+" people).",connFail:"Failed to connect to the room.",netFail:"Connection failed. Try again.",hostEnded:"The room was closed by the host.",copied:"Invite link copied.",copyFail:"Could not copy the link.",tapSound:"Tap the screen to turn on sound.",fsNo:"Fullscreen is not available in this browser.",noShare:"This browser does not support screen sharing.",shareFail:"Could not share the screen.",notImg:"Choose an image file.",avSet:"Photo set as avatar.",imgFail:"Could not use that image.",confirmLeave:"You are the host. Leaving closes the room for everyone. Continue?"}
+};
+const tr = (k,...a) => {const v=(L[lang]||L.pt)[k]; return typeof v==='function'?v(...a):v};
+let tt; const toast = (m,e) => {const t=$('toast'); t.textContent=m; t.classList.toggle('err',!!e); t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),3200)};
+const genCode = () => {const b=crypto.getRandomValues(new Uint32Array(8)); let s=''; for(const n of b) s+=AL[n%AL.length]; return s.slice(0,4)+'-'+s.slice(4)};
+const fmt = r => {const c=String(r).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8); return c.length>4?c.slice(0,4)+'-'+c.slice(4):c};
+const valid = c => /^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c), pid = c => PFX+c.replace('-','').toLowerCase();
+const hue = s => {let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))>>>0; return h%360};
+const send = (c,d) => {try{c&&c.open&&c.send(d)}catch{}};
+const cleanNick = n => (String(n==null?'':n).replace(/\s+/g,' ').trim().slice(0,24)) || tr('guest');
+const view = id => document.querySelectorAll('.v').forEach(v=>v.classList.toggle('on',v.id===id));
 
-  const INIT_COLORS = ['#8b5cf6', '#7c3aed', '#a78bfa', '#6d28d9', '#9333ea', '#6366f1', '#94a3b8', '#c4b5fd'];
-  const GRADS = [
-    ['#a78bfa','#5b21b6'], ['#8b5cf6','#3b0764'], ['#c4b5fd','#6d28d9'], ['#7c3aed','#2e1065'],
-    ['#94a3b8','#334155'], ['#a78bfa','#4c1d95'], ['#cbd5e1','#475569'], ['#8b5cf6','#1e1b4b'],
-  ];
-  const ANIMALS = ['🐸','🐷','🦊','🐿️','🐧','🐶','🐻','🐱','🐭','🐰','🐨','🐹',
-                   '🐼','🐥','🦌','🐦','🦜','🐮','🦝','🐯','🦁','🐵','🦉','🐙'];
-  const PRESETS = ANIMALS.map((e, i) => ({ e, bg:`linear-gradient(135deg,${GRADS[i % GRADS.length][0]},${GRADS[i % GRADS.length][1]})` }));
+let peer=null, hostConn=null, session=null, me={}, roster=[], sharing=false, local=null, busy=false, ch=null, mos=false;
+const guests=new Map(), outCalls=new Map(), inCalls=new Map(), streams=new Map(), scr=new Map();
+let myEmoji = st.get('m2.e') || EM[Math.floor(Math.random()*EM.length)];
+const okAv = a => typeof a==='string' && a.length<14000 && /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(a);
+let myAv = st.get('m2.a'); if(!okAv(myAv)) myAv = null;
+const av = a => a ? {a} : {};
+const card = (p,sub,cur,on) => {
+  const el=document.createElement(on?'button':'div'); if(on) el.type='button';
+  el.className='pc'+(cur?' cur':'')+(sub?'':' sm'); el.style.setProperty('--h',hue(p.id));
+  const a=document.createElement('span'); a.className='av'; setAv(a,p.e,p.a);
+  const t=document.createElement('span'); t.className='pt'; const n=document.createElement('b');
+  n.textContent=p.nick+(p.id===me.id?' '+tr('youP'):'')+(p.host?' ★':''); t.append(n);
+  if(sub){const sm=document.createElement('small'); sm.textContent=sub; t.append(sm)}
+  el.append(a,t); if(on) el.onclick=on; return el;
+};
+const setAv = (el,e,a) => {if(a){el.textContent=''; el.style.backgroundImage='url('+a+')'; el.classList.add('ph')} else {el.textContent=e; el.style.backgroundImage=''; el.classList.remove('ph')}};
+const stage = $('stage'), nickIn = $('nick'), codeIn = $('codeIn');
 
-  /* =====================================================
-     HELPERS
-     ===================================================== */
-  const $ = (id) => document.getElementById(id);
-  const store = {
-    get(k){ try { return localStorage.getItem(k); } catch { return null; } },
-    set(k,v){ try { localStorage.setItem(k,v); } catch {} },
+/* ---------- home ---------- */
+$('emoji').onclick = () => {myEmoji = EM[(EM.indexOf(myEmoji)+1)%EM.length]; myAv=null; st.set('m2.e',myEmoji); st.set('m2.a',''); paintMe()};
+nickIn.value = (st.get('m2.nick')||'').slice(0,24);
+nickIn.oninput = () => st.set('m2.nick', nickIn.value);
+const refresh = () => {$('join').disabled = busy || !valid(codeIn.value); $('create').disabled = busy; $('invGo').disabled = busy};
+codeIn.oninput = () => {codeIn.value = fmt(codeIn.value); refresh()};
+codeIn.onpaste = e => {e.preventDefault(); const t=(e.clipboardData||window.clipboardData).getData('text'); const m=t.match(/[?&#]sala=([A-Za-z0-9-]+)/)||[0,t]; codeIn.value=fmt(m[1]); refresh()};
+codeIn.onkeydown = e => {if(e.key==='Enter'&&!$('join').disabled) join()};
+nickIn.onkeydown = e => {if(e.key==='Enter') valid(codeIn.value)?join():create()};
+const getNick = () => {const n=cleanNick(nickIn.value); if(!nickIn.value.trim()){toast(tr('needName'),true); nickIn.focus(); return null} return n};
+const setBusy = on => {busy=on; $('create').textContent = tr(on?'wait':'create'); $('invGoTxt').textContent = tr(on?'wait':'enterRoom'); refresh()};
+const fail = m => {const p=peer; peer=null; hostConn=null; if(p){try{p.destroy()}catch{}} setBusy(false); toast(m,true)};
+let connK='connected'; const setConn = (s,k) => {connK=k; $('conn').className='conn '+(s==='ok'?'':s); $('connTxt').textContent=tr(k)};
+
+function bind(p){
+  p.on('call', onCall);
+  p.on('open', () => {if(peer===p&&session) setConn('ok','connected')});
+  p.on('disconnected', () => {if(peer!==p||!session) return; setConn('wait','reconnecting'); try{p.reconnect()}catch{}});
+  p.on('error', e => {if(peer===p&&session&&e.type!=='peer-unavailable') setConn('bad','noConn')});
+}
+function create(){
+  if(busy) return; const nick=getNick(); if(!nick) return;
+  if(typeof Peer==='undefined') return toast(tr('noPeer'),true);
+  setBusy(true);
+  const go = n => {
+    const c=genCode(), p=new Peer(pid(c),OPT); let open=false; bind(p);
+    p.on('open', id => {open=true; peer=p; enter({code:c,nick,host:true,id})});
+    p.on('error', e => {if(open) return; try{p.destroy()}catch{} if(e.type==='unavailable-id'&&n<4) return go(n+1); fail(tr('openFail'))});
   };
-
-  let toastTimer;
-  function toast(msg, isErr=false){
-    const t = $('toast');
-    t.textContent = msg;
-    t.classList.toggle('err', isErr);
-    t.classList.add('on');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('on'), 3600);
-  }
-
-  function showView(id){
-    document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === id));
-    document.body.classList.toggle('in-room', id === 'room');
-    window.scrollTo(0,0);
-  }
-
-  function safeSend(conn, data){ try { if (conn && conn.open) conn.send(data); } catch {} }
-
-  /* --- codigo da sala: XXXX-XXXX --- */
-  function genCode(){
-    const buf = new Uint32Array(8);
-    crypto.getRandomValues(buf);
-    let s = '';
-    for (const n of buf) s += ALPHABET[n % ALPHABET.length];
-    return s.slice(0,4) + '-' + s.slice(4);
-  }
-  function formatCode(raw){
-    const clean = String(raw).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
-    return clean.length > 4 ? clean.slice(0,4) + '-' + clean.slice(4) : clean;
-  }
-  const isValidCode = (c) => /^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c);
-  const peerIdFor = (code) => ROOM_PREFIX + code.replace('-','').toLowerCase();
-
-  const cleanNick = (n) => (String(n == null ? '' : n).replace(/\s+/g,' ').trim().slice(0, NICK_MAX)) || 'Convidado';
-
-  /* =====================================================
-     AVATAR
-     Tipos: {t:'n'} iniciais | {t:'p',i} animal | {t:'i',src} foto (jpeg data-url) | {t:'u',src} link https
-     ===================================================== */
-  let avatar = { t:'p', i:0 };
-
-  function sanitizeAvatar(a){
-    if (a && a.t === 'n') return { t:'n' };
-    if (a && a.t === 'p' && Number.isInteger(a.i) && a.i >= 0 && a.i < PRESETS.length) return { t:'p', i:a.i };
-    if (a && a.t === 'i' && typeof a.src === 'string' && a.src.startsWith('data:image/jpeg;base64,') && a.src.length < 60000) return { t:'i', src:a.src };
-    if (a && a.t === 'u' && typeof a.src === 'string' && a.src.length <= 500 && /^https:\/\//i.test(a.src)) return { t:'u', src:a.src };
-    return { t:'n' };
-  }
-  function initialsOf(nick){
-    const s = String(nick || '').replace(/[^\p{L}\p{N}]/gu, '');
-    return (Array.from(s).slice(0,2).join('') || '?').toUpperCase();
-  }
-  function colorOf(nick){
-    let h = 0;
-    for (const c of String(nick || '')) h = (h * 31 + c.codePointAt(0)) >>> 0;
-    return INIT_COLORS[h % INIT_COLORS.length];
-  }
-  function avatarEl(a, size, nick){
-    const av = sanitizeAvatar(a);
-    const el = document.createElement('span');
-    el.className = 'avatar';
-    if (size) el.style.setProperty('--s', size + 'px');
-    const asInitials = () => {
-      el.replaceChildren();
-      el.classList.add('ini');
-      el.textContent = initialsOf(nick);
-      el.style.background = colorOf(nick);
-    };
-    if (av.t === 'i' || av.t === 'u'){
-      const img = new Image();
-      img.alt = ''; img.decoding = 'async'; img.referrerPolicy = 'no-referrer';
-      img.onerror = asInitials;
-      img.src = av.src;
-      el.appendChild(img);
-    } else if (av.t === 'p'){
-      el.style.background = PRESETS[av.i].bg;
-      el.textContent = PRESETS[av.i].e;
-    } else {
-      asInitials();
-    }
-    return el;
-  }
-
-  const currentNick = () => session ? me.nick : nickIn.value.trim();
-
-  function renderAvatarButton(){
-    const nk = currentNick();
-    $('avatarSlot').replaceChildren(avatarEl(avatar, 46, nk));
-    $('inviteAvSlot').replaceChildren(avatarEl(avatar, 72, nk));
-    $('inviteName').textContent = nk || 'Convidado';
-  }
-  function renderMePill(){
-    if (!session) return;
-    $('meAv').replaceChildren(avatarEl(avatar, 26, me.nick));
-    $('meNick').textContent = me.nick;
-  }
-
-  function setAvatar(a){
-    avatar = sanitizeAvatar(a);
-    store.set('smith.avatar', JSON.stringify(avatar));
-    renderAvatarButton();
-    if (session){
-      renderMePill();
-      if (me.host) broadcastRoster();
-      else safeSend(hostConn, { t:'profile', avatar });
-    }
-  }
-
-  /* --- painel --- */
-  let panelAnchor = null;
-  function sameAvatar(a, b){
-    if (a.t !== b.t) return false;
-    if (a.t === 'p') return a.i === b.i;
-    if (a.t === 'i' || a.t === 'u') return a.src === b.src;
-    return true;
-  }
-  function buildPanelGrid(){
-    const grid = $('apGrid');
-    grid.replaceChildren();
-    const nick = currentNick();
-    const opts = [{ t:'n' }].concat(PRESETS.map((_, i) => ({ t:'p', i })));
-    opts.forEach((o, idx) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.setAttribute('aria-label', idx === 0 ? 'Iniciais do nickname' : 'Avatar ' + idx);
-      b.setAttribute('aria-pressed', String(sameAvatar(avatar, o)));
-      b.appendChild(avatarEl(o, 48, nick));
-      b.addEventListener('click', () => { setAvatar(o); closePanel(); });
-      grid.appendChild(b);
-    });
-  }
-  function openPanel(anchor, place){
-    panelAnchor = anchor;
-    buildPanelGrid();
-    $('apUrl').value = ''; $('apErr').textContent = '';
-    const p = $('apanel');
-    p.hidden = false;
-    const r = anchor.getBoundingClientRect();
-    const W = p.offsetWidth || 250;
-    p.style.left = Math.max(8, Math.min(r.left, window.innerWidth - W - 8)) + 'px';
-    if (place === 'up'){ p.style.top = 'auto'; p.style.bottom = (window.innerHeight - r.top + 10) + 'px'; }
-    else { p.style.bottom = 'auto'; p.style.top = (r.bottom + 10) + 'px'; }
-    anchor.setAttribute('aria-expanded', 'true');
-  }
-  function closePanel(){
-    $('apanel').hidden = true;
-    if (panelAnchor){ panelAnchor.setAttribute('aria-expanded','false'); panelAnchor = null; }
-  }
-  function togglePanel(anchor, place){
-    (!$('apanel').hidden && panelAnchor === anchor) ? closePanel() : openPanel(anchor, place);
-  }
-  $('avatarBtn').addEventListener('click', (e) => { e.stopPropagation(); togglePanel($('avatarBtn'), 'down'); });
-  $('mePill').addEventListener('click', (e) => { e.stopPropagation(); togglePanel($('mePill'), 'up'); });
-  $('apClose').addEventListener('click', closePanel);
-  document.addEventListener('click', (e) => {
-    if (!$('apanel').hidden && !$('apanel').contains(e.target)) closePanel();
-  });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
-  window.addEventListener('resize', closePanel);
-
-  // Imagem por link: tenta converter para JPEG 128px (fica salvo e nao depende do link);
-  // se o site nao permitir (CORS), usa o proprio link.
-  function loadAvatarFromUrl(raw){
-    return new Promise((resolve, reject) => {
-      let u;
-      try { u = new URL(raw); } catch { return reject(new Error('Link invalido.')); }
-      if (u.protocol !== 'https:') return reject(new Error('Use um link que comece com https://'));
-      const href = u.toString();
-      if (href.length > 500) return reject(new Error('Link muito longo.'));
-
-      const plain = () => {
-        const im = new Image();
-        im.referrerPolicy = 'no-referrer';
-        im.onload = () => resolve({ t:'u', src:href });
-        im.onerror = () => reject(new Error('Nao foi possivel carregar essa imagem.'));
-        im.src = href;
-      };
-      const cors = new Image();
-      cors.crossOrigin = 'anonymous';
-      cors.referrerPolicy = 'no-referrer';
-      cors.onload = () => {
-        try {
-          const S = 128, c = document.createElement('canvas');
-          c.width = c.height = S;
-          const side = Math.min(cors.naturalWidth, cors.naturalHeight) || S;
-          const sx = (cors.naturalWidth - side) / 2, sy = (cors.naturalHeight - side) / 2;
-          const ctx = c.getContext('2d');
-          ctx.fillStyle = '#14121f'; ctx.fillRect(0, 0, S, S);
-          ctx.drawImage(cors, sx, sy, side, side, 0, 0, S, S);
-          resolve({ t:'i', src:c.toDataURL('image/jpeg', 0.82) });
-        } catch { plain(); }
-      };
-      cors.onerror = plain;
-      cors.src = href;
-    });
-  }
-  async function useAvatarUrl(){
-    const val = $('apUrl').value.trim();
-    const err = $('apErr');
-    err.textContent = '';
-    if (!val){ err.textContent = 'Cole o link de uma imagem.'; return; }
-    const btn = $('apUse');
-    btn.disabled = true; btn.textContent = '...';
-    try {
-      setAvatar(await loadAvatarFromUrl(val));
-      closePanel();
-    } catch (e) {
-      err.textContent = e.message || 'Nao foi possivel usar essa imagem.';
-    } finally {
-      btn.disabled = false; btn.textContent = 'Usar';
-    }
-  }
-  $('apUse').addEventListener('click', useAvatarUrl);
-  $('apUrl').addEventListener('keydown', (e) => { if (e.key === 'Enter'){ e.preventDefault(); useAvatarUrl(); } });
-
-  /* =====================================================
-     HOME: NICKNAME E CODIGO
-     ===================================================== */
-  const nickIn = $('nick');
-  const codeIn = $('code');
-  function updateNickCount(){ $('nickCount').textContent = nickIn.value.length + '/' + NICK_MAX; }
-
-  nickIn.addEventListener('input', () => {
-    nickIn.classList.remove('invalid');
-    updateNickCount();
-    store.set('smith.nick', nickIn.value);
-    if (avatar.t === 'n') renderAvatarButton();
-  });
-  nickIn.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter'){ e.preventDefault(); isValidCode(codeIn.value) ? joinRoom() : createRoom(); }
-  });
-
-  function getNick(){
-    const n = nickIn.value.trim().replace(/\s+/g,' ');
-    if (!n){
-      nickIn.classList.remove('invalid'); void nickIn.offsetWidth;
-      nickIn.classList.add('invalid');
-      nickIn.focus();
-      toast('Escolha um nickname para entrar.', true);
-      return null;
-    }
-    return n.slice(0, NICK_MAX);
-  }
-
-  function refreshJoinBtn(){ $('joinBtn').disabled = busy || !isValidCode(codeIn.value); }
-  codeIn.addEventListener('input', () => { codeIn.value = formatCode(codeIn.value); refreshJoinBtn(); });
-  codeIn.addEventListener('paste', (e) => {
-    e.preventDefault();
-    const txt = (e.clipboardData || window.clipboardData).getData('text');
-    const m = txt.match(/[?&#]sala=([A-Za-z0-9-]+)/) || [null, txt];
-    codeIn.value = formatCode(m[1]);
-    refreshJoinBtn();
-  });
-  codeIn.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter'){ e.preventDefault(); if (!$('joinBtn').disabled) joinRoom(); }
-  });
-
-  /* =====================================================
-     ESTADO DA SALA
-     ===================================================== */
-  let busy = false;
-  let peer = null;             // meu Peer
-  let hostConn = null;         // (convidado) conexao de dados com o anfitriao
-  const guests = new Map();    // (anfitriao) peerId -> { conn, nick, avatar, sharing }
-  let session = null;          // { code }
-  let me = { id:'', nick:'', host:false };
-  let roster = [];             // [{id,nick,avatar,host,sharing}]
-  let sharing = false;
-  let localStream = null;
-  const outCalls = new Map();  // peerId -> MediaConnection (eu transmito para ele)
-  const inCalls = new Map();   // peerId -> MediaConnection (ele transmite para mim)
-  const inStreams = new Map(); // peerId -> MediaStream
-  let watchingId = null;       // de quem e a tela no palco
-
-  function setBusy(on, which){
-    busy = on;
-    $('createBtn').disabled = on;
-    $('createLbl').textContent = (on && which === 'create') ? 'Criando sala...' : 'Criar sala';
-    $('joinLbl').textContent   = (on && which === 'join')   ? 'Entrando...'     : 'Entrar';
-    nickIn.disabled = on; codeIn.disabled = on;
-    $('inviteJoin').disabled = on; $('inick').disabled = on;
-    $('inviteJoinLbl').textContent = (on && which === 'join') ? 'Entrando...' : 'Entrar na sala';
-    refreshJoinBtn();
-  }
-  function failHome(msg){
-    const p = peer; peer = null; hostConn = null;
-    if (p){ try { p.destroy(); } catch {} }
-    setBusy(false);
-    toast(msg, true);
-  }
-
-  function setConn(state, text){
-    const el = $('connState');
-    el.classList.toggle('wait', state === 'wait');
-    el.classList.toggle('bad', state === 'bad');
-    $('connTxt').textContent = text;
-  }
-
-  function bindRuntime(p){
-    p.on('call', onIncomingCall);
-    p.on('open', () => { if (peer === p && session) setConn('ok', 'Conectado'); });
-    p.on('disconnected', () => {
-      if (peer !== p || !session) return;
-      setConn('wait', 'Reconectando');
-      try { p.reconnect(); } catch {}
-    });
-    p.on('error', (err) => {
-      if (peer !== p || !session) return;
-      if (err.type === 'peer-unavailable') return;
-      setConn('bad', 'Sem conexao');
-    });
-  }
-
-  /* =====================================================
-     CRIAR / ENTRAR
-     ===================================================== */
-  function createRoom(){
-    if (busy) return;
-    const nick = getNick(); if (!nick) return;
-    if (typeof Peer === 'undefined'){ toast('Nao foi possivel carregar o PeerJS. Verifique sua internet.', true); return; }
-    setBusy(true, 'create');
-
-    const attempt = (n) => {
-      const code = genCode();
-      const p = new Peer(peerIdFor(code));
-      let opened = false;
-      bindRuntime(p);
-      p.on('open', (id) => {
-        opened = true; peer = p;
-        enterRoom({ code, nick, host:true, id });
-      });
-      p.on('error', (err) => {
-        if (opened) return;
-        try { p.destroy(); } catch {}
-        if (err.type === 'unavailable-id' && n < 4) return attempt(n + 1);
-        failHome('Nao foi possivel criar a sala. Verifique sua conexao e tente de novo.');
-      });
-    };
-    attempt(0);
-  }
-
-  function joinRoom(){
-    if (busy) return;
-    const nick = getNick(); if (!nick) return;
-    const code = codeIn.value;
-    if (!isValidCode(code)){ toast('Digite o codigo completo da sala (XXXX-XXXX).', true); return; }
-    if (typeof Peer === 'undefined'){ toast('Nao foi possivel carregar o PeerJS. Verifique sua internet.', true); return; }
-    setBusy(true, 'join');
-
-    const p = new Peer();
-    bindRuntime(p);
-    let settled = false, timer;
-    const fail = (msg) => { if (settled) return; settled = true; clearTimeout(timer); failHome(msg); };
-
-    p.on('open', (id) => {
-      peer = p;
-      const conn = p.connect(peerIdFor(code), { reliable:true, metadata:{ nick, avatar } });
-      timer = setTimeout(() => fail('Sala nao encontrada. Confira o codigo e tente de novo.'), JOIN_TIMEOUT_MS);
-      let entered = false;
-      conn.on('data', (msg) => {
-        if (!msg || typeof msg !== 'object') return;
-        if (!entered){
-          if (msg.t === 'locked') return fail('Sala trancada pelo anfitriao.');
-          if (msg.t === 'full') return fail('Sala cheia (maximo de ' + MAX_PEOPLE + ' pessoas).');
-          if (msg.t !== 'roster') return;
-          if (settled) return;
-          entered = true; settled = true; clearTimeout(timer);
-          hostConn = conn;
-          conn.on('close', () => { if (session) leaveRoom('A sala foi encerrada pelo anfitriao.'); });
-          enterRoom({ code, nick, host:false, id });
-        }
-        onHostMsg(msg);
-      });
-      conn.on('error', () => fail('Falha ao conectar na sala.'));
-    });
-    p.on('error', (err) => {
-      if (session) return;
-      if (err.type === 'peer-unavailable') fail('Sala nao encontrada. Confira o codigo e tente de novo.');
-      else fail('Falha de conexao. Verifique sua internet e tente de novo.');
-    });
-  }
-  $('createBtn').addEventListener('click', createRoom);
-  $('joinBtn').addEventListener('click', joinRoom);
-
-  /* =====================================================
-     ANFITRIAO: lista de pessoas, reacoes
-     ===================================================== */
-  function uniqueNick(nick){
-    const taken = new Set([me.nick.toLowerCase()]);
-    guests.forEach(g => taken.add(g.nick.toLowerCase()));
-    if (!taken.has(nick.toLowerCase())) return nick;
-    for (let i = 2; i < 100; i++){
-      const cand = nick.slice(0, NICK_MAX - String(i).length - 3) + ' (' + i + ')';
-      if (!taken.has(cand.toLowerCase())) return cand;
-    }
-    return nick;
-  }
-
-  function hostAcceptConnections(){
-    peer.on('connection', (conn) => {
-      const meta = conn.metadata || {};
-      conn.on('open', () => {
-        if (roomLocked){
-          safeSend(conn, { t:'locked' });
-          setTimeout(() => { try { conn.close(); } catch {} }, 400);
-          return;
-        }
-        if (guests.size + 1 >= MAX_PEOPLE){
-          safeSend(conn, { t:'full' });
-          setTimeout(() => { try { conn.close(); } catch {} }, 400);
-          return;
-        }
-        guests.set(conn.peer, {
-          conn, sharing:false,
-          nick: uniqueNick(cleanNick(meta.nick)),
-          avatar: sanitizeAvatar(meta.avatar),
-        });
-        broadcastRoster();
-      });
-      conn.on('data', (msg) => onGuestMsg(conn.peer, msg));
-      conn.on('close', () => dropGuest(conn.peer, conn));
-      conn.on('error', () => dropGuest(conn.peer, conn));
-    });
-  }
-  function dropGuest(id, conn){
-    const g = guests.get(id);
-    if (!g || (conn && g.conn !== conn)) return;
-    guests.delete(id);
-    broadcastRoster();
-  }
-  function onGuestMsg(id, msg){
-    const g = guests.get(id);
-    if (!g || !msg || typeof msg !== 'object') return;
-    if (msg.t === 'share'){ g.sharing = !!msg.on; broadcastRoster(); }
-    else if (msg.t === 'profile'){ g.avatar = sanitizeAvatar(msg.avatar); broadcastRoster(); }
-    else if (msg.t === 'react' && REACTIONS.includes(msg.e)){ broadcastReaction(id, msg.e); }
-  }
-  function buildRoster(){
-    const list = [{ id:me.id, nick:me.nick, avatar, host:true, sharing }];
-    guests.forEach((g, id) => list.push({ id, nick:g.nick, avatar:g.avatar, host:false, sharing:g.sharing }));
-    return list;
-  }
-  function broadcastRoster(){
-    const list = buildRoster();
-    applyRoster(list);
-    applyRoomMeta(roomName, roomLocked);
-    guests.forEach(g => safeSend(g.conn, { t:'roster', list, name:roomName, locked:roomLocked }));
-  }
-  function broadcastReaction(fromId, e){
-    showReaction(fromId, e);
-    guests.forEach(g => safeSend(g.conn, { t:'react', id:fromId, e }));
-  }
-
-  /* =====================================================
-     CONVIDADO: mensagens do anfitriao
-     ===================================================== */
-  function onHostMsg(msg){
-    if (msg.t === 'kick'){ leaveRoom('Voce foi removido da sala pelo anfitriao.'); return; }
-    if (msg.t === 'roster') applyRoomMeta(String(msg.name || '').slice(0, 30), !!msg.locked);
-    if (msg.t === 'roster' && Array.isArray(msg.list)){
-      applyRoster(msg.list.slice(0, MAX_PEOPLE).map(p => ({
-        id: String(p && p.id || '').slice(0, 100),
-        nick: cleanNick(p && p.nick),
-        avatar: sanitizeAvatar(p && p.avatar),
-        host: !!(p && p.host),
-        sharing: !!(p && p.sharing),
-      })).filter(p => p.id));
-    } else if (msg.t === 'react' && REACTIONS.includes(msg.e)){
-      showReaction(String(msg.id || ''), msg.e);
-    }
-  }
-
-  /* =====================================================
-     ENTRAR NA SALA (UI)
-     ===================================================== */
-  function roomLink(code){
-    const u = new URL(location.href);
-    u.search = ''; u.hash = '';
-    u.searchParams.set('sala', code);
-    return u.toString();
-  }
-
-  function enterRoom(s){
-    session = { code:s.code };
-    me = { id:s.id, nick:s.nick, host:s.host };
-    setBusy(false);
-    roster = []; watchingId = null; sharing = false; localStream = null;
-    resetZoom();
-
-    roomName = ''; roomLocked = false; applyRoomMeta('', false);
-    $('hostCtl').hidden = !s.host;
-    $('roomNameIn').value = '';
-    $('chipCodeTxt').textContent = s.code;
-    $('sideCode').textContent = s.code;
-    setConn('ok', 'Conectado');
-    updateShareBtn();
-    showView('room');
-
-    if (s.host){
-      hostAcceptConnections();
-      broadcastRoster();
-    } else {
-      renderAll();
-    }
-  }
-
-  async function copy(text, okMsg){
-    try { await navigator.clipboard.writeText(text); toast(okMsg); }
-    catch { toast('Nao foi possivel copiar. Selecione e copie manualmente.', true); }
-  }
-  const copyInvite = () => session && copy(roomLink(session.code), 'Link do convite copiado.');
-  $('chipCode').addEventListener('click', copyInvite);
-  $('sideLink').addEventListener('click', copyInvite);
-  $('sideCopy').addEventListener('click', () => session && copy(session.code, 'Codigo copiado.'));
-
-  /* =====================================================
-     LISTA DE PESSOAS / ROSTER
-     ===================================================== */
-  const ICON_CROWN = '<svg class="crown" viewBox="0 0 24 24" fill="currentColor"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z"/></svg>';
-  const ICON_SCREEN = '<svg class="i scr" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
-
-  function applyRoster(list){
-    const prevSharing = new Set(roster.filter(p => p.sharing).map(p => p.id));
-    roster = list;
-    const mine = roster.find(p => p.id === me.id);
-    if (mine && mine.nick !== me.nick){ me.nick = mine.nick; }
-
-    // Quem parou de transmitir (ou saiu): descarta a tela recebida.
-    prevSharing.forEach(id => {
-      const p = roster.find(x => x.id === id);
-      if (!p || !p.sharing){
-        inStreams.delete(id);
-        const c = inCalls.get(id); if (c){ inCalls.delete(id); try { c.close(); } catch {} }
+  go(0);
+}
+function join(){
+  if(busy) return; const nick=getNick(); if(!nick) return; const c=codeIn.value;
+  if(!valid(c)) return toast(tr('codeFull'),true);
+  if(typeof Peer==='undefined') return toast(tr('noPeer'),true);
+  setBusy(true);
+  const p=new Peer(OPT); bind(p); let done=false, timer;
+  const bad = m => {if(done) return; done=true; clearTimeout(timer); fail(m)};
+  p.on('open', id => {
+    peer=p; const conn=p.connect(pid(c),{reliable:true,metadata:{nick,e:myEmoji}}); let inside=false;
+    timer=setTimeout(()=>bad(tr('notFound')),9000);
+    conn.on('data', d => {
+      if(!d||typeof d!=='object') return;
+      if(!inside){
+        if(d.t==='full') return bad(tr('full',MAX));
+        if(d.t!=='roster'||done) return;
+        inside=done=true; clearTimeout(timer); hostConn=conn;
+        conn.on('close', () => {if(session) leave(tr('hostEnded'))});
+        enter({code:c,nick,host:false,id}); if(myAv) send(conn,{t:'av',a:myAv});
       }
+      onHost(d);
     });
-    // Quem saiu da sala: limpa qualquer resto.
-    [...inStreams.keys()].forEach(id => { if (!roster.some(p => p.id === id)) inStreams.delete(id); });
-
-    syncCalls();
-    renderAll();
-  }
-
-  function personRow(p){
-    const isMe = p.id === me.id;
-    const clickable = p.sharing;
-    const row = document.createElement(clickable ? 'button' : 'div');
-    row.className = 'prow' + (clickable ? ' click' : '') + (p.id === watchingId ? ' active' : '');
-    if (clickable){
-      row.type = 'button';
-      row.setAttribute('aria-label', 'Assistir tela de ' + p.nick);
-      row.addEventListener('click', () => { watchingId = p.id; resetZoom(); renderAll(); });
-    }
-    const av = document.createElement('span'); av.className = 'pav';
-    av.appendChild(avatarEl(p.avatar, 34, p.nick));
-    const dot = document.createElement('i'); dot.className = 'dot'; av.appendChild(dot);
-
-    const info = document.createElement('span'); info.className = 'pinfo';
-    const name = document.createElement('span'); name.className = 'pname';
-    const t = document.createElement('span'); t.className = 't'; t.textContent = p.nick; name.appendChild(t);
-    if (p.host) name.insertAdjacentHTML('beforeend', ICON_CROWN);
-    if (isMe){ const b = document.createElement('span'); b.className = 'badge-you'; b.textContent = 'VOCE'; name.appendChild(b); }
-    const sub = document.createElement('span');
-    sub.className = 'psub' + (p.sharing ? ' live' : '');
-    sub.textContent = p.sharing ? 'Compartilhando tela' : (isMe ? 'Voce' : 'Conectado');
-    info.append(name, sub);
-
-    row.append(av, info);
-    if (p.sharing) row.insertAdjacentHTML('beforeend', ICON_SCREEN);
-    if (me.host && !isMe){
-      const k = document.createElement('span'); k.className = 'kick'; k.setAttribute('role','button');
-      k.title = 'Remover da sala'; k.textContent = '\u2715';
-      k.addEventListener('click', (e) => { e.stopPropagation(); kickGuest(p.id); });
-      row.appendChild(k);
-    }
-    return row;
-  }
-
-  function renderSidebar(){
-    const tx = roster.filter(p => p.sharing);
-    const rest = roster.filter(p => !p.sharing);
-    $('txWrap').hidden = tx.length === 0;
-    $('nTx').textContent = tx.length;
-    $('nIn').textContent = rest.length;
-    $('rCount').textContent = roster.length;
-    $('listTx').replaceChildren(...tx.map(personRow));
-    $('listIn').replaceChildren(...rest.map(personRow));
-    renderMePill();
-  }
-
-  /* =====================================================
-     PALCO (video) + ZOOM
-     ===================================================== */
-  const vid = $('rvideo');
-  const viewport = $('viewport');
-  let Z = 1, TX = 0, TY = 0;
-
-  function resetZoom(){ Z = 1; TX = 0; TY = 0; applyZoom(); }
-  function clampPan(){
-    const r = viewport.getBoundingClientRect();
-    TX = Math.min(0, Math.max(r.width  - r.width  * Z, TX));
-    TY = Math.min(0, Math.max(r.height - r.height * Z, TY));
-  }
-  function applyZoom(){
-    vid.style.transform = 'translate(' + TX + 'px,' + TY + 'px) scale(' + Z + ')';
-    const has = !!vid.srcObject && $('ov').hidden; // so ha zoom com a tela realmente exibida
-    $('zOut').disabled = !has || Z <= 1.001;
-    $('zIn').disabled  = !has || Z >= MAX_ZOOM - 0.001;
-    viewport.classList.toggle('zoomed', Z > 1.001);
-  }
-  function zoomAt(newZ, cx, cy){
-    newZ = Math.min(MAX_ZOOM, Math.max(1, newZ));
-    const k = newZ / Z;
-    TX = cx - (cx - TX) * k;
-    TY = cy - (cy - TY) * k;
-    Z = newZ;
-    clampPan();
-    applyZoom();
-  }
-  const zoomCenter = (nz) => { const r = viewport.getBoundingClientRect(); zoomAt(nz, r.width / 2, r.height / 2); };
-  $('zIn').addEventListener('click',  () => zoomCenter(Z + 0.5));
-  $('zOut').addEventListener('click', () => zoomCenter(Z - 0.5));
-
-  viewport.addEventListener('wheel', (e) => {
-    if (!vid.srcObject) return;
-    e.preventDefault();
-    const r = viewport.getBoundingClientRect();
-    zoomAt(Z * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX - r.left, e.clientY - r.top);
-  }, { passive:false });
-  viewport.addEventListener('dblclick', () => { if (vid.srcObject) zoomCenter(1); });
-
-  let drag = null;
-  viewport.addEventListener('pointerdown', (e) => {
-    if (Z <= 1.001 || e.button !== 0) return;
-    drag = { x:e.clientX, y:e.clientY, tx:TX, ty:TY };
-    viewport.setPointerCapture(e.pointerId);
-    viewport.classList.add('dragging');
+    conn.on('error', () => bad(tr('connFail')));
   });
-  viewport.addEventListener('pointermove', (e) => {
-    if (!drag) return;
-    TX = drag.tx + (e.clientX - drag.x);
-    TY = drag.ty + (e.clientY - drag.y);
-    clampPan(); applyZoom();
-  });
-  const endDrag = () => { drag = null; viewport.classList.remove('dragging'); };
-  viewport.addEventListener('pointerup', endDrag);
-  viewport.addEventListener('pointercancel', endDrag);
-  window.addEventListener('resize', () => { clampPan(); applyZoom(); });
+  p.on('error', e => {if(!session) bad(e.type==='peer-unavailable'?tr('notFound'):tr('netFail'))});
+}
+$('create').onclick=create; $('join').onclick=join;
 
-  /* --- tela cheia --- */
-  function toggleFullscreen(){
-    const box = $('stagebox');
-    const active = document.fullscreenElement || document.webkitFullscreenElement;
-    if (!active) (box.requestFullscreen || box.webkitRequestFullscreen || (() => {})).call(box);
-    else (document.exitFullscreen || document.webkitExitFullscreen || (() => {})).call(document);
-  }
-  function onFsChange(){
-    const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
-    document.querySelectorAll('.fs-in').forEach(el => el.hidden = on);
-    document.querySelectorAll('.fs-out').forEach(el => el.hidden = !on);
-    setTimeout(() => { clampPan(); applyZoom(); }, 60);
-  }
-  document.addEventListener('fullscreenchange', onFsChange);
-  document.addEventListener('webkitfullscreenchange', onFsChange);
-  $('fsTop').addEventListener('click', toggleFullscreen);
-  $('fsDock').addEventListener('click', toggleFullscreen);
+/* ---------- convite (tela antes de entrar) ---------- */
+const invNick = $('invNick'), invGrid = $('invGrid');
+const paintInv = () => {
+  setAv($('invAv'),myEmoji,myAv); $('invAv').style.setProperty('--h', hue(myEmoji));
+  $('invName').textContent = invNick.value.trim() || tr('yourName');
+  $('invCnt').textContent = invNick.value.length + '/24';
+  invGrid.querySelectorAll('button').forEach(b => {const on=!myAv&&b.textContent===myEmoji; b.classList.toggle('pri',on); b.setAttribute('aria-pressed',String(on))});
+};
+EM.forEach(e => {
+  const b = document.createElement('button'); b.type='button'; b.className='b'; b.textContent=e; b.setAttribute('aria-label','Avatar '+e);
+  b.onclick = () => {myEmoji=e; myAv=null; st.set('m2.e',e); st.set('m2.a',''); paintMe()};
+  invGrid.appendChild(b);
+});
+const paintMe = () => {setAv($('emoji'),myEmoji,myAv); paintInv()};
+const pickPhoto = () => $('file').click();
+$('photo').onclick = pickPhoto; $('invPhoto').onclick = pickPhoto;
+$('file').onchange = async e => {
+  const f=e.target.files&&e.target.files[0]; e.target.value=''; if(!f) return;
+  if(!/^image\//.test(f.type)) return toast(tr('notImg'),true);
+  const url=URL.createObjectURL(f);
+  try{
+    const img=await new Promise((ok,no)=>{const i=new Image(); i.onload=()=>ok(i); i.onerror=no; i.src=url});
+    const S=72, c=document.createElement('canvas'); c.width=c.height=S;
+    const w=img.naturalWidth, h=img.naturalHeight, m=Math.min(w,h);
+    c.getContext('2d').drawImage(img,(w-m)/2,(h-m)/2,m,m,0,0,S,S);
+    const a=c.toDataURL('image/jpeg',.72); if(!okAv(a)) throw 0;
+    myAv=a; st.set('m2.a',a); paintMe(); toast(tr('avSet'));
+  }catch{toast(tr('imgFail'),true)}
+  finally{URL.revokeObjectURL(url)}
+};
+$('invPick').onclick = () => {invGrid.hidden=!invGrid.hidden; $('invPick').setAttribute('aria-expanded',String(!invGrid.hidden))};
+invNick.oninput = () => {nickIn.value=invNick.value; st.set('m2.nick',invNick.value); paintInv()};
+invNick.onkeydown = e => {if(e.key==='Enter') $('invGo').click()};
+$('invGo').onclick = () => {
+  if(busy) return;
+  if(!invNick.value.trim()){toast(tr('needName'),true); invNick.focus(); return}
+  nickIn.value = invNick.value; join();
+};
+$('invBack').onclick = () => {
+  codeIn.value=''; $('hint').hidden=true;
+  try{history.replaceState(null,'',location.pathname)}catch{}
+  refresh(); view('home'); nickIn.focus();
+};
 
-  /* --- overlay --- */
-  const IC_MONITOR = '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
-  function setOverlay(kind, title, sub){
-    const ov = $('ov');
-    if (!kind){ ov.hidden = true; return; }
-    ov.hidden = false;
-    $('ovIc').innerHTML = kind === 'wait' ? '<span class="spin"></span>' : IC_MONITOR;
-    $('ovT').textContent = title || '';
-    $('ovS').textContent = sub || '';
-    $('ovPlay').hidden = kind !== 'play';
-  }
-  function tryPlay(){
-    const p = vid.play();
-    if (p && p.then){
-      p.then(() => { if (vid.srcObject) setOverlay(null); })
-       .catch(() => setOverlay('play', 'Transmissao pronta', 'O navegador bloqueou a reproducao automatica. Clique para assistir.'));
-    }
-  }
-  $('ovPlay').addEventListener('click', () => { vid.muted = (watchingId === me.id); tryPlay(); });
-
-  function renderStage(){
-    const sharers = roster.filter(p => p.sharing);
-    if (watchingId && !sharers.some(p => p.id === watchingId)) watchingId = null;
-    if (!watchingId){
-      const other = sharers.find(p => p.id !== me.id);
-      if (other) watchingId = other.id;
-    }
-    const p = roster.find(x => x.id === watchingId);
-
-    if (!p){
-      if (vid.srcObject){ vid.srcObject = null; resetZoom(); }
-      $('who').hidden = true;
-      if (sharing) setOverlay('empty', 'Voce esta transmitindo sua tela', 'Clique no seu nome na lista para ver o preview.');
-      else setOverlay('empty', 'Ninguem esta transmitindo agora', 'Clique em Compartilhar tela para comecar.');
-      applyZoom();
-      return;
-    }
-
-    $('who').hidden = false;
-    $('whoName').textContent = p.nick;
-    $('whoCrown').hidden = !p.host;
-
-    const stream = (p.id === me.id) ? localStream : inStreams.get(p.id);
-    if (stream){
-      if (vid.srcObject !== stream){
-        vid.srcObject = stream;
-        resetZoom();
-        vid.muted = (p.id === me.id);
-        setOverlay(null);
-        tryPlay();
-      } else if (vid.paused && $('ov').hidden){
-        tryPlay();
-      }
-    } else {
-      if (vid.srcObject){ vid.srcObject = null; resetZoom(); }
-      setOverlay('wait', 'Conectando a transmissao de ' + p.nick + '...', '');
-    }
-    applyZoom();
-  }
-
-  function renderAll(){ renderSidebar(); renderStage(); }
-
-  /* =====================================================
-     TRANSMITIR / ASSISTIR (chamadas de midia P2P)
-     ===================================================== */
-  function onIncomingCall(call){
-    call.answer(); // so recebe, nao envia video
-    const from = call.peer;
-    const old = inCalls.get(from);
-    if (old && old !== call){ try { old.close(); } catch {} }
-    inCalls.set(from, call);
-    call.on('stream', (s) => {
-      if (inCalls.get(from) !== call) return;
-      inStreams.set(from, s);
-      // sem nada no palco? assiste essa tela automaticamente
-      if (!watchingId && roster.some(p => p.id === from && p.sharing)) watchingId = from;
-      renderAll();
+/* ---------- anfitrião ---------- */
+const uniq = n => {const t=new Set([me.nick.toLowerCase()]); guests.forEach(g=>t.add(g.nick.toLowerCase())); if(!t.has(n.toLowerCase())) return n; for(let i=2;i<100;i++){const c=n.slice(0,19)+' ('+i+')'; if(!t.has(c.toLowerCase())) return c} return n};
+function acceptConns(){
+  peer.on('connection', conn => {
+    const m=conn.metadata||{};
+    conn.on('open', () => {
+      if(guests.size+1>=MAX){send(conn,{t:'full'}); setTimeout(()=>{try{conn.close()}catch{}},400); return}
+      guests.set(conn.peer,{conn,sharing:false,nick:uniq(cleanNick(m.nick)),e:EM.includes(m.e)?m.e:'🙂',a:null}); broadcast();
     });
-    const gone = () => {
-      if (inCalls.get(from) !== call) return;
-      inCalls.delete(from);
-      inStreams.delete(from);
-      renderAll();
-    };
-    call.on('close', gone);
-    call.on('error', gone);
-  }
-
-  // Liga (ou desliga) as chamadas de quem esta transmitindo para cada pessoa da sala.
-  function syncCalls(){
-    if (!peer) return;
-    outCalls.forEach((c, id) => {
-      if (!sharing || !roster.some(p => p.id === id)){ outCalls.delete(id); try { c.close(); } catch {} }
+    conn.on('data', d => {
+      const g=guests.get(conn.peer); if(!g||!d||typeof d!=='object') return;
+      if(d.t==='share'){g.sharing=!!d.on; broadcast()} else if(d.t==='av'){if(okAv(d.a)){g.a=d.a; broadcast()}} else if(d.t==='ev') ev(conn.peer,d);
     });
-    if (!sharing || !localStream) return;
-    roster.forEach(p => {
-      if (p.id === me.id || outCalls.has(p.id)) return;
-      try {
-        const call = peer.call(p.id, localStream, { metadata:{ kind:'screen' } });
-        if (!call) return;
-        outCalls.set(p.id, call);
-        const gone = () => { if (outCalls.get(p.id) === call) outCalls.delete(p.id); };
-        call.on('close', gone);
-        call.on('error', gone);
-      } catch {}
-    });
-  }
-
-  function notifyShare(on){
-    if (me.host) broadcastRoster();
-    else safeSend(hostConn, { t:'share', on });
-  }
-
-  function updateShareBtn(){
-    const btn = $('shareBtn');
-    btn.classList.toggle('on', sharing);
-    btn.setAttribute('aria-pressed', String(sharing));
-    $('shareTxt').textContent = sharing ? 'Parar transmissao' : 'Compartilhar tela';
-    $('shareIc').innerHTML = sharing
-      ? '<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>'
-      : '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m9 10 3-3 3 3M12 7v6"/>';
-  }
-
-  async function startShare(){
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
-      toast('Seu navegador nao suporta compartilhar tela.', true);
-      return;
-    }
-    let stream;
-    try {
-      stream = await navigator.mediaDevices.getDisplayMedia({ video:{ frameRate:{ ideal:30 } }, audio:true });
-    } catch (e) {
-      if (e && e.name !== 'NotAllowedError' && e.name !== 'AbortError') toast('Nao foi possivel compartilhar a tela.', true);
-      return;
-    }
-    if (!session){ stream.getTracks().forEach(t => t.stop()); return; }
-    localStream = stream;
-    sharing = true;
-    const vt = stream.getVideoTracks()[0];
-    if (vt) vt.addEventListener('ended', stopShare);
-    updateShareBtn();
-    syncCalls();
-    notifyShare(true);
-    renderAll();
-  }
-
-  function stopShare(){
-    if (!sharing) return;
-    sharing = false;
-    if (localStream){ localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-    outCalls.forEach(c => { try { c.close(); } catch {} });
-    outCalls.clear();
-    if (watchingId === me.id) watchingId = null;
-    updateShareBtn();
-    if (session) notifyShare(false);
-    renderAll();
-  }
-  $('shareBtn').addEventListener('click', () => sharing ? stopShare() : startShare());
-
-  /* =====================================================
-     REACOES
-     ===================================================== */
-  let lastReact = 0;
-  document.querySelectorAll('.react-btn').forEach(b => b.addEventListener('click', () => {
-    const now = Date.now();
-    if (now - lastReact < 250 || !session) return;
-    lastReact = now;
-    const e = b.dataset.e;
-    if (!REACTIONS.includes(e)) return;
-    if (me.host) broadcastReaction(me.id, e);
-    else safeSend(hostConn, { t:'react', e });
-  }));
-
-  function showReaction(fromId, e){
-    const layer = $('reacts');
-    if (layer.childElementCount > 30) return;
-    const who = roster.find(p => p.id === fromId);
-    const el = document.createElement('div');
-    el.className = 'react';
-    el.style.left = (8 + Math.random() * 78) + '%';
-    const re = document.createElement('span'); re.className = 're'; re.textContent = e;
-    const rn = document.createElement('span'); rn.className = 'rn'; rn.textContent = who ? who.nick : '';
-    el.append(re);
-    if (who) el.append(rn);
-    layer.appendChild(el);
-    setTimeout(() => el.remove(), 2300);
-  }
-
-  /* =====================================================
-     SAIR
-     ===================================================== */
-  function teardown(){
-    try { if (document.fullscreenElement) document.exitFullscreen(); } catch {}
-    closePanel();
-    session = null;
-    if (localStream){ localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-    sharing = false;
-    outCalls.forEach(c => { try { c.close(); } catch {} }); outCalls.clear();
-    inCalls.forEach(c => { try { c.close(); } catch {} }); inCalls.clear();
-    inStreams.clear();
-    guests.forEach(g => { try { g.conn.close(); } catch {} }); guests.clear();
-    const p = peer; peer = null; hostConn = null;
-    if (p){ try { p.destroy(); } catch {} }
-    roster = []; watchingId = null;
-    vid.srcObject = null;
-    $('reacts').replaceChildren();
-    resetZoom();
-    updateShareBtn();
-  }
-  function leaveRoom(reason){
-    teardown();
-    setBusy(false);
-    codeIn.value = '';
-    refreshJoinBtn();
-    renderAvatarButton();
-    showView('home');
-    if (reason) toast(reason, true);
-  }
-  $('leaveBtn').addEventListener('click', () => {
-    if (me.host && guests.size > 0 && !confirm((window.T || String)('Voce e o anfitriao. Sair encerra a sala para todos. Continuar?'))) return;
-    leaveRoom();
+    const gone = () => {const g=guests.get(conn.peer); if(g&&g.conn===conn){guests.delete(conn.peer); broadcast()}};
+    conn.on('close',gone); conn.on('error',gone);
   });
+}
+function broadcast(){
+  const list=[{id:me.id,nick:me.nick,e:myEmoji,...av(myAv),host:true,sharing}];
+  guests.forEach((g,id)=>list.push({id,nick:g.nick,e:g.e,...av(g.a),host:false,sharing:g.sharing}));
+  applyRoster(list); guests.forEach(g=>send(g.conn,{t:'roster',list}));
+}
+function onHost(d){
+  if(d.t==='roster'&&Array.isArray(d.list)){
+    applyRoster(d.list.slice(0,MAX).map(p=>({id:String(p&&p.id||'').slice(0,100),nick:cleanNick(p&&p.nick),e:EM.includes(p&&p.e)?p.e:'🙂',a:okAv(p&&p.a)?p.a:null,host:!!(p&&p.host),sharing:!!(p&&p.sharing)})).filter(p=>p.id));
+  } else if(d.t==='ev'){const o=clean(d); if(o) apply(String(d.from||''),o)}
+}
 
+/* ---------- eventos (chat e reações) ---------- */
+function clean(d){
+  const k=d.k;
+  if(k==='chat') return {k,m:String(d.m||'').slice(0,140)};
+  if(k==='react'&&RE.includes(d.e)) return {k,e:d.e};
+  return null;
+}
+function ev(from,d){ // só o anfitrião: valida, aplica e repassa
+  const o=clean(d); if(!o) return; apply(from,o);
+  guests.forEach((g,id)=>{if(id!==from) send(g.conn,{t:'ev',from,...o})});
+}
+function emit(o){
+  if(me.host) return ev(me.id,o);
+  send(hostConn,{t:'ev',...o}); apply(me.id,o);
+}
+function apply(from,o){
+  const p=roster.find(x=>x.id===from);
+  if(o.k==='chat') caption(p,o.m); else if(o.k==='react') floatEmoji(o.e);
+}
+function caption(p,m){
+  const el=document.createElement('div'); el.className='cap';
+  const b=document.createElement('b'); b.textContent=p?p.nick+':':'?'; el.append(b,document.createTextNode(m));
+  const f=$('feed'); f.appendChild(el); while(f.childElementCount>3) f.firstChild.remove();
+  setTimeout(()=>el.remove(),7000);
+}
+function floatEmoji(e){
+  if(stage.querySelectorAll('.fl').length>25) return;
+  const el=document.createElement('div'); el.className='fl'; el.textContent=e; el.style.left=(6+Math.random()*84)+'%';
+  stage.appendChild(el); setTimeout(()=>el.remove(),2300);
+}
+document.querySelectorAll('.rx').forEach(b=>b.onclick=()=>session&&emit({k:'react',e:b.dataset.e}));
+$('chat').onkeydown = e => {if(e.key==='Enter'){const m=e.target.value.trim(); if(m&&session){emit({k:'chat',m}); e.target.value=''}}};
 
-  /* =====================================================
-     TELA DE CONVITE (link ?sala=XXXX-XXXX)
-     ===================================================== */
-  const inviteNick = $('inick');
-  const updateInviteCount = () => { $('inickCount').textContent = inviteNick.value.length + '/' + NICK_MAX; };
-  function showInvite(code){
-    codeIn.value = code;
-    refreshJoinBtn();
-    $('inviteCode').textContent = code;
-    inviteNick.value = nickIn.value;
-    updateInviteCount();
-    renderAvatarButton();
-    showView('invite');
-    (inviteNick.value.trim() ? $('inviteJoin') : inviteNick).focus();
-  }
-  inviteNick.addEventListener('input', () => {
-    inviteNick.classList.remove('invalid');
-    nickIn.value = inviteNick.value;
-    store.set('smith.nick', nickIn.value);
-    updateNickCount(); updateInviteCount();
-    renderAvatarButton();
+/* ---------- sala ---------- */
+function enter(s){
+  session={code:s.code}; me={id:s.id,nick:s.nick,host:s.host}; setBusy(false);
+  roster=[]; sharing=false; local=null; updShare();
+  $('codeTxt').textContent=$('codeBig').textContent=s.code; setConn('ok','connected'); view('room');
+  if(s.host){acceptConns(); broadcast()} else render();
+}
+const link = () => {const u=new URL(location.href); u.search=''; u.hash=''; u.searchParams.set('sala',session.code); return u.toString()};
+const copyLink = async () => {if(!session) return; try{await navigator.clipboard.writeText(link()); toast(tr('copied'))}catch{toast(tr('copyFail'),true)}};
+$('copy').onclick = $('copy2').onclick = copyLink;
+$('mosBtn').onclick = () => {mos=!mos; render()};
+
+function applyRoster(list){
+  const prev=new Set(roster.filter(p=>p.sharing).map(p=>p.id)); roster=list;
+  prev.forEach(id=>{const p=roster.find(x=>x.id===id); if(!p||!p.sharing){streams.delete(id); const c=inCalls.get(id); if(c){inCalls.delete(id); try{c.close()}catch{}}}});
+  [...streams.keys()].forEach(id=>{if(!roster.some(p=>p.id===id)) streams.delete(id)});
+  syncCalls(); render();
+}
+function render(){
+  const live=roster.filter(p=>p.sharing), many=live.length>1, sc=$('screens');
+  $('cnt').textContent=tr('people',roster.length);
+  const idle=roster.filter(p=>!p.sharing);
+  $('people').replaceChildren(...idle.map(p=>card(p,'',false)));
+  $('roomH').textContent=tr('roomH',idle.length);
+  if(!live.some(p=>p.id===ch)) ch=live.length?live[0].id:null;
+  const all=mos&&many; sc.classList.toggle('mos',all); sc.style.setProperty('--c',all?Math.ceil(Math.sqrt(live.length)):1);
+  live.forEach((p,i)=>{
+    const el=scr.get(p.id)||mkScr(p); el.classList.toggle('cur',p.id===ch); el.style.order=i;
+    el.querySelector('.lb').textContent='CH '+(i+1)+' · '+p.nick+(p.id===me.id?' '+tr('youP'):'');
+    const s=p.id===me.id?local:streams.get(p.id), v=el.querySelector('video');
+    if(s){
+      if(v.srcObject!==s){v.srcObject=s; v.muted=p.id===me.id; v.play().catch(()=>{v.muted=true; v.play().catch(()=>{}); toast(tr('tapSound'))})}
+      el.querySelector('.tw').hidden=true;
+    } else el.querySelector('.tw').hidden=false;
   });
-  function inviteGo(){
-    if (busy) return;
-    if (!inviteNick.value.trim()){
-      inviteNick.classList.remove('invalid'); void inviteNick.offsetWidth;
-      inviteNick.classList.add('invalid'); inviteNick.focus();
-      toast('Escolha um nickname para entrar.', true);
-      return;
-    }
-    nickIn.value = inviteNick.value;
-    joinRoom();
-  }
-  $('inviteJoin').addEventListener('click', inviteGo);
-  inviteNick.addEventListener('keydown', (e) => { if (e.key === 'Enter'){ e.preventDefault(); inviteGo(); } });
-  $('inviteAvBtn').addEventListener('click', (e) => { e.stopPropagation(); togglePanel($('inviteAvBtn'), 'up'); });
-  $('inviteBack').addEventListener('click', () => {
-    if (busy) return;
-    codeIn.value = ''; refreshJoinBtn();
-    try { history.replaceState(null, '', location.pathname); } catch {}
-    showView('home');
-    nickIn.focus();
+  [...scr.keys()].forEach(id=>{if(!live.some(p=>p.id===id)){scr.get(id).remove(); scr.delete(id)}});
+  const cur=live.findIndex(p=>p.id===ch);
+  $('liveTag').hidden=!live.length; $('chtag').hidden=!live.length||all; $('chtag').textContent=cur>=0?'CH '+(cur+1)+' · '+(live[cur].id===me.id?tr('you'):live[cur].nick):'';
+  $('chs').replaceChildren(...live.map(p=>card(p,tr('sharing'),p.id===ch&&!all,()=>{ch=p.id; mos=false; render()})));
+  $('liveH').textContent=tr('liveH',live.length);
+  $('mosBtn').hidden=!many; $('mosBtn').classList.toggle('cur',all); $('empty').hidden=live.length>0;
+  const mp=roster.find(x=>x.id===me.id); setAv($('meAv'),mp?mp.e:myEmoji,mp?mp.a:myAv); $('meAv').style.setProperty('--h',hue(me.id||'x')); $('meName').textContent=mp?mp.nick:me.nick;
+}
+function mkScr(p){
+  const el=document.createElement('div'); el.className='scr';
+  el.innerHTML='<video autoplay playsinline></video><div class="tw">'+tr('tuning')+'</div><span class="lb"></span>';
+  el.querySelector('video').onclick=e=>{if(p.id!==me.id) e.target.muted=false};
+  $('screens').appendChild(el); scr.set(p.id,el); return el;
+}
+function zap(d){
+  const live=roster.filter(p=>p.sharing); if(live.length<2) return;
+  const i=Math.max(0,live.findIndex(p=>p.id===ch)); ch=live[(i+d+live.length)%live.length].id; mos=false; render();
+}
+document.addEventListener('keydown', e => {
+  if(!session||/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if(e.key==='ArrowRight') zap(1); else if(e.key==='ArrowLeft') zap(-1);
+});
+let sx=null;
+stage.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+stage.addEventListener('touchend',e=>{if(sx==null) return; const dx=e.changedTouches[0].clientX-sx; sx=null; if(Math.abs(dx)>70) zap(dx<0?1:-1)},{passive:true});
+$('fs').onclick = () => {
+  const f=stage.requestFullscreen||stage.webkitRequestFullscreen;
+  if(document.fullscreenElement) document.exitFullscreen(); else if(f) f.call(stage); else toast(tr('fsNo'),true);
+};
+
+/* ---------- transmitir / assistir ---------- */
+function onCall(call){
+  call.answer(); const from=call.peer, old=inCalls.get(from); if(old&&old!==call){try{old.close()}catch{}}
+  inCalls.set(from,call);
+  call.on('stream', s => {if(inCalls.get(from)===call){streams.set(from,s); render()}});
+  const gone=()=>{if(inCalls.get(from)===call){inCalls.delete(from); streams.delete(from); render()}};
+  call.on('close',gone); call.on('error',gone);
+}
+function syncCalls(){
+  if(!peer) return;
+  outCalls.forEach((c,id)=>{if(!sharing||!roster.some(p=>p.id===id)){outCalls.delete(id); try{c.close()}catch{}}});
+  if(!sharing||!local) return;
+  roster.forEach(p=>{
+    if(p.id===me.id||outCalls.has(p.id)) return;
+    try{const c=peer.call(p.id,local,{metadata:{kind:'screen'}}); if(!c) return; outCalls.set(p.id,c); const g=()=>{if(outCalls.get(p.id)===c) outCalls.delete(p.id)}; c.on('close',g); c.on('error',g)}catch{}
   });
+}
+const notify = on => me.host ? broadcast() : send(hostConn,{t:'share',on});
+const updShare = () => {$('share').classList.toggle('stop',sharing); $('share').classList.toggle('pri',!sharing); $('share').textContent=tr(sharing?'stopShare':'share')};
+async function startShare(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia) return toast(tr('noShare'),true);
+  let s; try{s=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:30}},audio:true})}catch(e){if(e&&e.name!=='NotAllowedError'&&e.name!=='AbortError') toast(tr('shareFail'),true); return}
+  if(!session){s.getTracks().forEach(t=>t.stop()); return}
+  local=s; sharing=true; const vt=s.getVideoTracks()[0]; if(vt) vt.addEventListener('ended',stopShare);
+  updShare(); syncCalls(); notify(true); render();
+}
+function stopShare(){
+  if(!sharing) return; sharing=false;
+  if(local){local.getTracks().forEach(t=>t.stop()); local=null}
+  outCalls.forEach(c=>{try{c.close()}catch{}}); outCalls.clear(); updShare(); if(session) notify(false); render();
+}
+$('share').onclick = () => sharing?stopShare():startShare();
 
+/* ---------- sair ---------- */
+function leave(reason){
+  try{if(document.fullscreenElement) document.exitFullscreen()}catch{}
+  session=null; if(local){local.getTracks().forEach(t=>t.stop()); local=null} sharing=false;
+  [outCalls,inCalls].forEach(m=>{m.forEach(c=>{try{c.close()}catch{}}); m.clear()});
+  guests.forEach(g=>{try{g.conn.close()}catch{}}); guests.clear(); streams.clear();
+  scr.forEach(t=>t.remove()); scr.clear(); ch=null; mos=false; $('feed').replaceChildren();
+  const p=peer; peer=null; hostConn=null; if(p){try{p.destroy()}catch{}}
+  roster=[]; updShare(); setBusy(false); codeIn.value=''; refresh(); view('home'); if(reason) toast(reason,true);
+}
+$('leave').onclick = () => {if(me.host&&guests.size>0&&!confirm(tr('confirmLeave'))) return; leave()};
 
-  /* =====================================================
-     CONTROLES DO ANFITRIAO, MODO FLUTUANTE, PWA
-     ===================================================== */
-  let roomName = '', roomLocked = false;
-  function applyRoomMeta(name, locked){
-    const el = $('roomNameTop');
-    el.textContent = name; el.hidden = !name;
-    $('lockTxt').textContent = locked ? 'Destrancar sala' : 'Trancar sala';
-    document.title = (name ? name + ' · ' : '') + 'SCREEN';
-  }
-  function kickGuest(id){
-    const g = guests.get(id); if (!g) return;
-    safeSend(g.conn, { t:'kick' });
-    guests.delete(id); broadcastRoster();
-    setTimeout(() => { try { g.conn.close(); } catch {} }, 300);
-    toast(g.nick + ' foi removido da sala.');
-  }
-  const setRoomName = () => { if (!me || !me.host) return; roomName = $('roomNameIn').value.replace(/\s+/g,' ').trim().slice(0, 30); broadcastRoster(); };
-  $('roomNameIn').addEventListener('change', setRoomName);
-  $('roomNameIn').addEventListener('keydown', (e) => { if (e.key === 'Enter'){ e.preventDefault(); setRoomName(); e.target.blur(); } });
-  $('lockBtn').addEventListener('click', () => {
-    if (!me || !me.host) return;
-    roomLocked = !roomLocked; broadcastRoster();
-    toast(roomLocked ? 'Sala trancada. Ninguem novo consegue entrar.' : 'Sala destrancada.');
-  });
-
-  const pipBtn = $('pipBtn');
-  if (!document.pictureInPictureEnabled) pipBtn.hidden = true;
-  pipBtn.addEventListener('click', async () => {
-    try {
-      if (document.pictureInPictureElement) await document.exitPictureInPicture();
-      else if (vid.srcObject) await vid.requestPictureInPicture();
-      else toast('Nenhuma transmissao para exibir ainda.', true);
-    } catch { toast('Nao foi possivel abrir o modo flutuante.', true); }
-  });
-
-  let installEvt = null;
-  const isStandalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const showInstall = (on) => document.querySelectorAll('.installBtn').forEach(b => b.hidden = !on || isStandalone);
-  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; showInstall(true); });
-  window.addEventListener('appinstalled', () => showInstall(false));
-  if (isIOS) showInstall(true);
-  document.querySelectorAll('.installBtn').forEach(b => b.addEventListener('click', async () => {
-    if (installEvt){ installEvt.prompt(); try { await installEvt.userChoice; } catch {} installEvt = null; showInstall(false); }
-    else toast('No iPhone: toque em Compartilhar e depois em "Adicionar a Tela de Inicio".');
-  }));
-  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
-
-  /* =====================================================
-     INIT
-     ===================================================== */
-  (function init(){
-    const savedNick = store.get('smith.nick');
-    if (savedNick) nickIn.value = savedNick.slice(0, NICK_MAX);
-    try {
-      const a = JSON.parse(store.get('smith.avatar') || 'null');
-      if (a) avatar = sanitizeAvatar(a);
-    } catch {}
-    updateNickCount();
-    renderAvatarButton();
-    updateShareBtn();
-
-    // link de convite: ?sala=XXXX-XXXX (ou #XXXX-XXXX)
-    const params = new URLSearchParams(location.search);
-    const fromUrl = formatCode(params.get('sala') || location.hash.replace('#',''));
-    if (isValidCode(fromUrl)){
-      showInvite(fromUrl);
-    } else {
-      nickIn.focus();
-    }
-    refreshJoinBtn();
-  })();
-})();
-</script>
-<script>
-(function(){
-  var LANG='pt'; try{ LANG=localStorage.getItem('screen.lang')||((navigator.language||'').toLowerCase().indexOf('pt')===0?'pt':'en'); }catch(e){}
-  document.documentElement.lang = LANG==='pt'?'pt-BR':'en';
-  document.querySelectorAll('.langBtn').forEach(function(b){
-    b.textContent = LANG==='pt'?'EN':'PT';
-    b.addEventListener('click',function(){ try{localStorage.setItem('screen.lang', LANG==='pt'?'en':'pt');}catch(e){} location.reload(); });
-  });
-  if(LANG==='pt') return;
-  var D={"Antes de entrar": "Before you join", "Clique para assistir": "Click to watch", "Codigo da sala": "Room code", "Compartilhar tela": "Share screen", "Compartilhe por link ou código": "Share by link or code", "Compartilhe sua tela instantaneamente, direto pelo navegador. Crie uma sala, envie o link e comece a transmitir.": "Share your screen instantly, right from your browser. Create a room, send the link and start streaming.", "Conectado": "Connected", "Copiar link do convite": "Copy invite link", "Criar sala": "Create room", "Crie uma sala em poucos segundos": "Create a room in seconds", "Desenvolvido por": "Developed by", "Em tempo real.": "In real time.", "Entrar": "Join", "Entrar na sala": "Join room", "Escolha como voce vai aparecer para os outros participantes.": "Choose how you'll appear to other participants.", "Escolha um nickname para ser identificado na sala.": "Pick a nickname to be identified in the room.", "Escolher avatar": "Choose avatar", "Esse nome fica visivel para todos na sala.": "This name is visible to everyone in the room.", "Na sala —": "In the room —", "Nickname": "Nickname", "OU": "OR", "Ou use uma imagem por link": "Or use an image link", "Sala": "Room", "Seu avatar": "Your avatar", "Sua tela.": "Your screen.", "Transmitindo —": "Streaming —", "Usar": "Use", "Voce entrou como": "You joined as", "Voltar ao inicio": "Back to start", "Várias pessoas podem transmitir ao mesmo tempo": "Several people can stream at the same time", "CODIGO DA SALA": "ROOM CODE", "VOCE": "YOU", "Voce": "You", "Instalar app": "Install app", "Controles do anfitrião": "Host controls", "Nome da sala": "Room name", "Trancar sala": "Lock room", "Destrancar sala": "Unlock room", "Aumentar zoom": "Zoom in", "Diminuir zoom": "Zoom out", "Controles da sala": "Room controls", "Copiar codigo": "Copy code", "Coracao": "Heart", "Fechar": "Close", "Joinha": "Thumbs up", "Martelo": "Hammer", "Pessoas na sala": "People in the room", "Reagir com coracao": "React with heart", "Reagir com joinha": "React with thumbs up", "Reagir com martelo": "React with hammer", "Sair da sala": "Leave room", "Seu nome na sala": "Your name in the room", "Tela cheia": "Fullscreen", "Trocar avatar": "Change avatar", "Modo flutuante": "Picture-in-picture", "Remover da sala": "Remove from room", "A sala foi encerrada pelo anfitriao.": "The room was closed by the host.", "Clique em Compartilhar tela para comecar.": "Click Share screen to start.", "Clique no seu nome na lista para ver o preview.": "Click your name in the list to see the preview.", "Codigo copiado.": "Code copied.", "Cole o link de uma imagem.": "Paste an image link.", "Compartilhando tela": "Sharing screen", "Digite o codigo completo da sala (XXXX-XXXX).": "Enter the full room code (XXXX-XXXX).", "Escolha um nickname para entrar.": "Pick a nickname to join.", "Falha ao conectar na sala.": "Failed to connect to the room.", "Falha de conexao. Verifique sua internet e tente de novo.": "Connection failed. Check your internet and try again.", "Iniciais do nickname": "Nickname initials", "Link do convite copiado.": "Invite link copied.", "Link invalido.": "Invalid link.", "Link muito longo.": "Link too long.", "Nao foi possivel carregar essa imagem.": "Couldn't load that image.", "Nao foi possivel carregar o PeerJS. Verifique sua internet.": "Couldn't load PeerJS. Check your internet.", "Nao foi possivel compartilhar a tela.": "Couldn't share the screen.", "Nao foi possivel copiar. Selecione e copie manualmente.": "Couldn't copy. Select and copy manually.", "Nao foi possivel criar a sala. Verifique sua conexao e tente de novo.": "Couldn't create the room. Check your connection and try again.", "Nao foi possivel usar essa imagem.": "Couldn't use that image.", "Ninguem esta transmitindo agora": "Nobody is streaming right now", "O navegador bloqueou a reproducao automatica. Clique para assistir.": "Your browser blocked autoplay. Click to watch.", "Parar transmissao": "Stop streaming", "Sala nao encontrada. Confira o codigo e tente de novo.": "Room not found. Check the code and try again.", "Sem conexao": "No connection", "Seu navegador nao suporta compartilhar tela.": "Your browser doesn't support screen sharing.", "Transmissao pronta": "Stream ready", "Voce e o anfitriao. Sair encerra a sala para todos. Continuar?": "You're the host. Leaving closes the room for everyone. Continue?", "Voce esta transmitindo sua tela": "You're streaming your screen", "Sala trancada pelo anfitriao.": "The room is locked by the host.", "Voce foi removido da sala pelo anfitriao.": "You were removed from the room by the host.", "Sala trancada. Ninguem novo consegue entrar.": "Room locked. No one new can join.", "Sala destrancada.": "Room unlocked.", "Nenhuma transmissao para exibir ainda.": "No stream to show yet.", "Nao foi possivel abrir o modo flutuante.": "Couldn't open picture-in-picture.", "No iPhone: toque em Compartilhar e depois em \"Adicionar a Tela de Inicio\".": "On iPhone: tap Share, then \"Add to Home Screen\".", "Seu nome": "Your name"}, P=[["^Sala cheia \\(maximo de (\\d+) pessoas\\)\\.$", "Room full (max $1 people)."], ["^Conectando a transmissao de (.*?)\\.*$", "Connecting to $1's stream\u2026"], ["^Assistir tela de (.+)$", "Watch $1's screen"], ["^(.+) foi removido da sala\\.$", "$1 was removed from the room."]].map(function(p){return [new RegExp(p[0]),p[1]];});
-  function tr(x){
-    var m=/^(\s*)([\s\S]*?)(\s*)$/.exec(x), k=m[2]; if(!k) return x;
-    if(D[k]!==undefined) return m[1]+D[k]+m[3];
-    for(var i=0;i<P.length;i++) if(P[i][0].test(k)) return m[1]+k.replace(P[i][0],P[i][1])+m[3];
-    return x;
-  }
-  window.T=tr;
-  var ATTR=['placeholder','aria-label','title'];
-  function node(n){
-    if(n.nodeType===3){ var t=tr(n.nodeValue); if(t!==n.nodeValue) n.nodeValue=t; }
-    else if(n.nodeType===1){
-      if(n.tagName==='SCRIPT'||n.tagName==='STYLE') return;
-      ATTR.forEach(function(a){ if(n.hasAttribute(a)){ var v=n.getAttribute(a), t=tr(v); if(t!==v) n.setAttribute(a,t); } });
-      for(var c=n.firstChild;c;c=c.nextSibling) node(c);
-    }
-  }
-  node(document.body);
-  new MutationObserver(function(ms){ ms.forEach(function(m){
-    if(m.type==='characterData') node(m.target);
-    else if(m.type==='attributes') node(m.target);
-    else m.addedNodes.forEach(node);
-  }); }).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTR});
-})();
-</script>
-<script>
-(function(){
-  var W = 300; // largura de cada trecho de linha entre batimentos
-  function randRange(a,b){ return a + Math.random()*(b-a); }
-  function beatPath(x0, base){
-    var spike = randRange(40,60), notch = randRange(15,30), tall = randRange(50,75);
-    var x = x0;
-    var p = ' L' + x + ',' + base;
-    x += randRange(60,110); p += ' L' + x + ',' + base;
-    var x1 = x + randRange(14,22); p += ' L' + x1 + ',' + (base - spike);
-    var x2 = x1 + randRange(18,26); p += ' L' + x2 + ',' + (base + tall);
-    var x3 = x2 + randRange(10,16); p += ' L' + x3 + ',' + (base - notch);
-    var x4 = x3 + randRange(16,24); p += ' L' + x4 + ',' + base;
-    x0 = x4 + W;
-    p += ' L' + x0 + ',' + base;
-    return { d:p, next:x0 };
-  }
-  function makeStrip(totalWidth, base){
-    var d = 'M0,' + base, x = 0;
-    while (x < totalWidth){ var r = beatPath(x, base); d += r.d; x = r.next; }
-    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-    svg.setAttribute('viewBox','0 0 ' + x + ' 140');
-    svg.setAttribute('preserveAspectRatio','none');
-    svg.setAttribute('width', x); svg.setAttribute('height', 140);
-    var path = document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.setAttribute('d', d);
-    svg.appendChild(path);
-    return { svg:svg, width:x };
-  }
-  var track = document.getElementById('ekgTrack');
-  if (!track) return;
-  function loop(){
-    var vw = Math.max(window.innerWidth, 800) + 400;
-    var a = makeStrip(vw, 70), b = makeStrip(vw, 70);
-    track.replaceChildren(a.svg, b.svg);
-    track.style.transition = 'none';
-    track.style.transform = 'translateX(0)';
-    // força o navegador a aplicar antes de animar
-    void track.offsetWidth;
-    var dur = a.width / 90; // velocidade constante, em segundos
-    track.style.transition = 'transform ' + dur + 's linear';
-    requestAnimationFrame(function(){ track.style.transform = 'translateX(-' + a.width + 'px)'; });
-    setTimeout(loop, dur * 1000);
-  }
-  loop();
+/* ---------- início ---------- */
+const fromUrl = fmt(new URLSearchParams(location.search).get('sala')||location.hash.replace('#',''));
+function applyLang(){
+  document.documentElement.lang = lang==='pt'?'pt-BR':'en'; document.title = tr('title');
+  document.querySelectorAll('[data-i]').forEach(e=>{e.textContent=tr(e.dataset.i)});
+  document.querySelectorAll('[data-ip]').forEach(e=>{e.placeholder=tr(e.dataset.ip)});
+  document.querySelectorAll('[data-it]').forEach(e=>{e.title=tr(e.dataset.it)});
+  document.querySelectorAll('[data-ia]').forEach(e=>{e.setAttribute('aria-label',tr(e.dataset.ia))});
+  document.querySelectorAll('.plist').forEach(e=>{e.dataset.empty=tr('empty')});
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===lang)));
+  $('connTxt').textContent=tr(connK); $('liveH').textContent=tr('liveH',0); $('roomH').textContent=tr('roomH',0); $('cnt').textContent=tr('people',1);
+  setBusy(busy); updShare(); paintInv(); if(session) render();
+}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.l; st.set('m2.lang',lang); applyLang()});
+applyLang();
+paintMe();
+if(valid(fromUrl)){codeIn.value=fromUrl; $('invCode').textContent=fromUrl; invNick.value=nickIn.value; paintInv(); refresh(); view('invite'); invNick.focus()}
+else nickIn.focus();
+refresh();
+/* ---------- instalar como app ---------- */
+const instBtns = document.querySelectorAll('.inst'), iosM = $('iosM');
+const isApp = () => (window.matchMedia&&matchMedia('(display-mode: standalone)').matches) || navigator.standalone===true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let installEv = null;
+const showInst = on => instBtns.forEach(b=>{b.hidden=!on});
+if(!isApp()&&isIOS) showInst(true);
+window.addEventListener('beforeinstallprompt', e => {e.preventDefault(); installEv=e; if(!isApp()) showInst(true)});
+window.addEventListener('appinstalled', () => {installEv=null; showInst(false); toast(tr('installed'))});
+const openHelp = kind => {
+  const list=$('iosL'), msg=$('iosP');
+  $('iosT').textContent = tr(kind+'Title');
+  list.hidden = kind==='file'; msg.hidden = kind!=='file';
+  if(kind==='file') msg.textContent = tr('fileMsg');
+  else [...list.children].forEach((li,i)=>{li.textContent=tr(kind+'S'+(i+1))});
+  iosM.hidden=false; $('iosOk').focus();
+};
+const doInstall = async () => {
+  if(installEv){
+    const ev=installEv; installEv=null;
+    try{ev.prompt(); const r=await ev.userChoice; if(r&&r.outcome==='accepted') showInst(false); else installEv=ev}catch{installEv=ev}
+  } else if(isIOS) openHelp('ios');
+  else openHelp(/^https?:$/.test(location.protocol)?'other':'file');
+};
+instBtns.forEach(b=>b.onclick=doInstall); $('dlBtn').onclick=doInstall;
+if(isApp()) $('dl').hidden=true;
+const closeIos = () => {iosM.hidden=true};
+$('iosOk').onclick = closeIos; iosM.onclick = e => {if(e.target===iosM) closeIos()};
+document.addEventListener('keydown', e => {if(e.key==='Escape'&&!iosM.hidden) closeIos()});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script>
 </body>
