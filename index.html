@@ -184,6 +184,10 @@ button.pc{cursor:pointer}.pc.cur{background:var(--ye)}
 .av.pa,.big.pa{border-color:transparent!important;background:transparent!important}
 .krow{display:flex;gap:6px;align-items:center}.krow .pc{flex:1;min-width:0}
 .kick{flex:none;height:30px;padding:0 10px;font-size:12px;border-radius:10px;box-shadow:0 3px 0 var(--ink);background:var(--pk);color:var(--dk)}
+#lock{display:inline-flex;align-items:center;gap:8px}#lock svg{display:block;width:18px;height:18px;flex:none}
+@media (min-width:701px){#dock{flex-wrap:nowrap}#dock .in{flex:1 1 120px;min-width:0}}
+@media (min-width:900px){#dock{width:min(100%,980px)}}
+@media (max-width:899px){#lock .lt{display:none}#lock{width:44px;padding:0;justify-content:center}}
 </style>
 </head>
 <body>
@@ -491,7 +495,10 @@ function kick(id){
 function updLock(){
   const b=$('lock'); if(!b) return;
   b.hidden=!me.host; b.setAttribute('aria-pressed',String(locked)); b.classList.toggle('pri',locked);
-  b.textContent=(locked?'🔒 ':'🔓 ')+tr(locked?'unlock':'lock');
+  const ic=locked
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>';
+  const t=tr(locked?'unlock':'lock'); b.innerHTML=ic+'<span class="lt"></span>'; b.querySelector('.lt').textContent=t; b.title=t; b.setAttribute('aria-label',t);
 }
 function broadcast(){
   const list=[{id:me.id,nick:me.nick,e:myEmoji,...av(myAv),host:true,sharing}];
