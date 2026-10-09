@@ -624,11 +624,11 @@ const callTry = new Map();
 function tune(c){
   try{
     const pc=c.peerConnection; if(!pc) return;
-    const br=Math.round(Math.min(3e6,Math.max(2.5e5,5e6/Math.max(1,outCalls.size))));
+    const br=Math.round(Math.min(1e7,Math.max(4e5,24e6/Math.max(1,outCalls.size))));
     pc.getSenders().forEach(async sd=>{
       if(!sd.track||sd.track.kind!=='video') return;
       const p=sd.getParameters(); if(!p.encodings||!p.encodings.length) p.encodings=[{}];
-      p.encodings[0].maxBitrate=br; p.encodings[0].maxFramerate=30; p.degradationPreference='maintain-framerate';
+      p.encodings[0].maxBitrate=br; p.encodings[0].maxFramerate=60; p.encodings[0].priority='high'; p.encodings[0].networkPriority='high'; p.degradationPreference='maintain-framerate';
       try{await sd.setParameters(p)}catch{}
     });
   }catch{}
@@ -665,7 +665,7 @@ const updShare = () => {$('share').classList.toggle('stop',sharing); $('share').
 async function startShare(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia) return toast(tr('noShare'),true);
   let s; const dm=navigator.mediaDevices;
-  try{s=await dm.getDisplayMedia({video:{width:{max:1920},height:{max:1080},frameRate:{ideal:30,max:30}},audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},windowAudio:'window',systemAudio:'include',suppressLocalAudioPlayback:true,selfBrowserSurface:'exclude'})}
+  try{s=await dm.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},windowAudio:'window',systemAudio:'include',suppressLocalAudioPlayback:true,selfBrowserSurface:'exclude'})}
   catch(e){
     if(e&&(e.name==='NotAllowedError'||e.name==='AbortError')) return;
     try{s=await dm.getDisplayMedia({video:{frameRate:{ideal:30}},audio:true})}catch(e2){if(e2&&e2.name!=='NotAllowedError'&&e2.name!=='AbortError') toast(tr('shareFail'),true); return}
