@@ -6,6 +6,7 @@
 <title>SCREEN 2.0 · Sua tela no ar</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2342ff">
+<script>try{if(localStorage.getItem("m2.theme")==="dark"){document.documentElement.dataset.theme="dark";document.querySelector('meta[name=theme-color]').content="#0a0a0a"}}catch(e){}</script>
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,37 +16,37 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&display=swap" rel="stylesheet">
 <style>
-:root{--bl:#2342ff;--ye:#ffd23f;--ink:#12121a;--pk:#ff4fa3;--bars:linear-gradient(90deg,#fff 0 14.28%,#ffd23f 0 28.57%,#00d1d1 0 42.85%,#2fd35c 0 57.14%,#ff4fa3 0 71.42%,#ff4d3d 0 85.7%,#2342ff 0)}
+:root{--bl:#2342ff;--ye:#ffd23f;--ink:#12121a;--pk:#ff4fa3;--dk:#12121a;--sf:#fff;--tx:#12121a;--mu:#55556a;--glass:rgba(18,18,26,.22);--bars:linear-gradient(90deg,#fff 0 14.28%,#ffd23f 0 28.57%,#00d1d1 0 42.85%,#2fd35c 0 57.14%,#ff4fa3 0 71.42%,#ff4d3d 0 85.7%,#2342ff 0)}
 *{box-sizing:border-box}[hidden]{display:none!important}
 html,body{height:100%;margin:0}
 body{background:var(--bl);color:#fff;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
 button,input{font:inherit}
 :focus-visible{outline:3px solid var(--ye);outline-offset:3px}
 .v{display:none;position:fixed;inset:0}.v.on{display:flex}
-.b{height:44px;padding:0 18px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);font-weight:700;cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .08s,box-shadow .08s;white-space:nowrap}
+.b{height:44px;padding:0 18px;border:3px solid var(--ink);border-radius:14px;background:var(--sf);color:var(--tx);font-weight:700;cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .08s,box-shadow .08s;white-space:nowrap}
 .b:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 var(--ink)}.b:disabled{opacity:.5;cursor:not-allowed}
 .b.pri{background:var(--ye)}.b.stop{background:var(--pk)}
-.in{height:44px;padding:0 14px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);min-width:0}
+.in{height:44px;padding:0 14px;border:3px solid var(--ink);border-radius:14px;background:var(--sf);color:var(--tx);min-width:0}
 .logo{font-family:Unbounded,system-ui,sans-serif;font-weight:900}
 /* entrada */
 #home{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;overflow:auto;scroll-behavior:smooth}
 .hero{max-width:560px}
 .hero h1{font-family:Unbounded,system-ui,sans-serif;font-weight:900;font-size:clamp(40px,9vw,84px);line-height:.95;letter-spacing:-.03em;margin:0 0 20px}
-.hero h1 sup{display:inline-block;font-size:.3em;padding:.15em .4em;margin-left:.25em;border:3px solid var(--ink);border-radius:12px;background:var(--ye);color:var(--ink);transform:rotate(-8deg);vertical-align:top}
+.hero h1 sup{display:inline-block;font-size:.3em;padding:.15em .4em;margin-left:.25em;border:3px solid var(--ink);border-radius:12px;background:var(--ye);color:var(--dk);transform:rotate(-8deg);vertical-align:top}
 .hero p{font-size:19px;max-width:34ch;margin:0 0 26px}
 .strip{height:20px;border:3px solid var(--ink);border-radius:10px;background:var(--bars)}
-.card{width:min(100%,400px);padding:24px;border:3px solid var(--ink);border-radius:24px;background:#fff;color:var(--ink);box-shadow:8px 8px 0 var(--ink)}
+.card{width:min(100%,400px);padding:24px;border:3px solid var(--ink);border-radius:24px;background:var(--sf);color:var(--tx);box-shadow:8px 8px 0 var(--ink)}
 .card label{display:block;margin-bottom:6px;font-weight:700}
 .row{display:flex;gap:10px;margin-bottom:16px}.row .in{flex:1}
 #emoji,#photo{width:44px;padding:0;font-size:22px}
-.card .pri{width:100%}.or{margin:18px 0 14px;text-align:center;font-size:14px;color:#55556a}
+.card .pri{width:100%}.or{margin:18px 0 14px;text-align:center;font-size:14px;color:var(--mu)}
 #codeIn{font-family:ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase}
 #hint{margin:0 0 16px;padding:8px 12px;border:3px solid var(--ink);border-radius:12px;background:var(--ye);font-weight:600}
 /* sala */
 #room{flex-direction:column}
 .bar{display:flex;align-items:center;gap:10px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}
 .bar .logo{font-size:18px}.sp{flex:1}
-.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:3px solid var(--ink);border-radius:99px;background:#fff;color:var(--ink);font-size:13px;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:3px solid var(--ink);border-radius:99px;background:var(--sf);color:var(--tx);font-size:13px;font-weight:700}
 button.chip{background:var(--ye);cursor:pointer}
 .conn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700}.conn i{width:10px;height:10px;border-radius:50%;border:2px solid var(--ink);background:#5dff9a}
 .conn.wait i{background:var(--ye)}.conn.bad i{background:var(--pk)}
@@ -55,7 +56,7 @@ button.chip{background:var(--ye);cursor:pointer}
 .scr{display:none;position:relative;min-height:0;background:#000}.scr.cur,#screens.mos .scr{display:block}
 .scr video{width:100%;height:100%;object-fit:contain;background:#000}
 .scr .tw{position:absolute;inset:0;display:grid;place-items:center;background:#000;color:#fff}
-.scr .lb{display:none}#screens.mos .lb{display:block;position:absolute;left:8px;bottom:8px;padding:2px 8px;border-radius:8px;background:var(--ink);font-size:12px;font-weight:700}
+.scr .lb{display:none}#screens.mos .lb{display:block;position:absolute;left:8px;bottom:8px;padding:2px 8px;border-radius:8px;background:var(--dk);font-size:12px;font-weight:700}
 #empty{position:absolute;inset:0;z-index:2;background:#000}
 #empty .bars{height:72%;background:var(--bars)}
 .nosig{position:absolute;left:0;right:0;bottom:0;height:28%;display:grid;place-content:center;padding:8px;text-align:center;background:#111}
@@ -63,29 +64,29 @@ button.chip{background:var(--ye);cursor:pointer}
 .hud{position:absolute;z-index:3;left:12px;right:12px;top:12px;display:flex;gap:8px;align-items:center;pointer-events:none}
 .hud>*{pointer-events:auto}
 #liveTag{padding:2px 9px;border:2px solid #000;border-radius:8px;background:var(--pk);font-size:12px;font-weight:800}
-#chtag{padding:2px 10px;border-radius:8px;background:var(--ink);font-size:13px;font-weight:700}
-#fs{margin-left:auto;width:34px;height:34px;border:2px solid #000;border-radius:10px;background:#fff;color:var(--ink);cursor:pointer;font-weight:800}
+#chtag{padding:2px 10px;border-radius:8px;background:var(--dk);font-size:13px;font-weight:700}
+#fs{margin-left:auto;width:34px;height:34px;border:2px solid #000;border-radius:10px;background:var(--sf);color:var(--tx);cursor:pointer;font-weight:800}
 #feed{position:absolute;z-index:4;left:0;right:0;bottom:14px;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
 .cap{max-width:88%;padding:3px 10px;border-radius:4px;background:#000c;color:#fff;font-size:clamp(14px,2.4vw,20px);text-align:center;word-break:break-word}
 .cap b{margin-right:6px;color:var(--ye)}
 .fl{position:absolute;z-index:4;bottom:16px;font-size:38px;pointer-events:none;animation:up 2.2s ease-out forwards}
 @keyframes up{to{transform:translateY(-260px) scale(1.2);opacity:0}}
-.chn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 5px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font-weight:700;white-space:nowrap;cursor:pointer}
-.chn i{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--ink);color:#fff;font-size:13px;font-style:normal}
+.chn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 5px;border:3px solid var(--ink);border-radius:12px;background:var(--sf);color:var(--tx);font-weight:700;white-space:nowrap;cursor:pointer}
+.chn i{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--tx);color:var(--sf);font-size:13px;font-style:normal}
 .chn.cur{background:var(--ye)}.chn.mo{padding:0 14px}
-.pill{display:flex;align-items:center;gap:8px;padding:3px 12px 3px 3px;border:3px solid var(--ink);border-radius:99px;background:#fff;color:var(--ink);font-size:13px;font-weight:700;white-space:nowrap}
+.pill{display:flex;align-items:center;gap:8px;padding:3px 12px 3px 3px;border:3px solid var(--ink);border-radius:99px;background:var(--sf);color:var(--tx);font-size:13px;font-weight:700;white-space:nowrap}
 .pill .av{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:hsl(var(--h) 80% 78%);font-size:15px}
 .pill.live{background:var(--ye);cursor:pointer}
-#dock{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 16px;margin-bottom:max(14px,env(safe-area-inset-bottom));padding:10px;border:3px solid var(--ink);border-radius:20px;background:rgba(18,18,26,.22)}
+#dock{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 16px;margin-bottom:max(14px,env(safe-area-inset-bottom));padding:10px;border:3px solid var(--ink);border-radius:20px;background:var(--glass)}
 #dock .in{flex:1 1 160px}.rx{width:44px;padding:0;font-size:20px}
-.toast{position:fixed;left:50%;bottom:112px;z-index:99;max-width:90vw;padding:10px 16px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font-weight:600;opacity:0;pointer-events:none;transform:translate(-50%,16px);transition:.2s}
+.toast{position:fixed;left:50%;bottom:112px;z-index:99;max-width:90vw;padding:10px 16px;border:3px solid var(--ink);border-radius:12px;background:var(--sf);color:var(--tx);font-weight:600;opacity:0;pointer-events:none;transform:translate(-50%,16px);transition:.2s}
 .toast.on{opacity:1;transform:translate(-50%,0)}.toast.err{background:var(--pk)}
 /* sala em colunas */
 .rbody{flex:1;min-height:0;display:grid;grid-template-columns:300px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"side deck" "side dock";column-gap:16px;padding:0 16px}
 .side{grid-area:side;display:flex;flex-direction:column;gap:14px;min-height:0;overflow-y:auto;padding:2px 2px 14px;scrollbar-width:none}
 .deck{grid-area:deck;padding:0}
 #dock{grid-area:dock;justify-self:center;width:min(100%,780px);margin:12px 0;margin-bottom:max(14px,env(safe-area-inset-bottom))}
-.sc{display:flex;flex-direction:column;gap:10px;padding:14px;border:3px solid var(--ink);border-radius:20px;background:rgba(18,18,26,.22)}
+.sc{display:flex;flex-direction:column;gap:10px;padding:14px;border:3px solid var(--ink);border-radius:20px;background:var(--glass)}
 .sc h3{margin:0;font-size:13px;font-weight:800}
 .sh{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:32px}
 .sh .chn{height:32px;padding:0 12px;font-size:13px}
@@ -93,12 +94,12 @@ button.chip{background:var(--ye);cursor:pointer}
 .sc>.b{width:100%}
 .plist{display:flex;flex-direction:column;gap:8px}
 .plist:empty::after{content:attr(data-empty);font-size:13px;opacity:.85}
-.pc{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);text-align:left;font-weight:700}
+.pc{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border:3px solid var(--ink);border-radius:14px;background:var(--sf);color:var(--tx);text-align:left;font-weight:700}
 button.pc{cursor:pointer}.pc.cur{background:var(--ye)}
 .pc .av,.me .av{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);background:hsl(var(--h,40) 80% 78%);font-size:19px}
 .pc.sm{padding:4px 10px 4px 4px}.pc.sm .av{width:30px;height:30px;font-size:16px}
-.pt{display:flex;flex-direction:column;min-width:0}.pt b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pt small{font-size:12px;font-weight:600;color:#55556a}
-.me{display:flex;align-items:center;gap:10px;margin-top:auto;padding:10px;border:3px solid var(--ink);border-radius:16px;background:#fff;color:var(--ink);font-size:13px;font-weight:600}
+.pt{display:flex;flex-direction:column;min-width:0}.pt b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pt small{font-size:12px;font-weight:600;color:var(--mu)}
+.me{display:flex;align-items:center;gap:10px;margin-top:auto;padding:10px;border:3px solid var(--ink);border-radius:16px;background:var(--sf);color:var(--tx);font-size:13px;font-weight:600}
 .me b{overflow-wrap:anywhere}
 #screens.mos{gap:8px;padding:8px}
 #screens.mos .scr{border-radius:16px;overflow:hidden;outline:3px solid rgba(255,255,255,.22)}
@@ -125,53 +126,58 @@ button.pc{cursor:pointer}.pc.cur{background:var(--ye)}
 #invite{align-items:center;justify-content:center;padding:20px;overflow:auto;isolation:isolate}
 .pulse{position:absolute;left:0;right:0;top:50%;width:100%;height:200px;transform:translateY(-50%);z-index:-1;pointer-events:none;opacity:.35}
 .pulse path{fill:none;stroke:#fff;stroke-width:3;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-.icard{width:min(100%,420px);margin:auto;border:3px solid var(--ink);border-radius:24px;background:#fff;color:var(--ink);box-shadow:8px 8px 0 var(--ink);overflow:hidden}
+.icard{width:min(100%,420px);margin:auto;border:3px solid var(--ink);border-radius:24px;background:var(--sf);color:var(--tx);box-shadow:8px 8px 0 var(--ink);overflow:hidden}
 .isec{padding:22px 24px}.isec+.isec{border-top:3px solid var(--ink)}
 .ihead,.ipick,.iback{text-align:center}
 .ihead .logo{display:inline-flex;align-items:center;gap:10px;font-size:16px}
 .ihead .logo::before{content:"";width:8px;height:22px;border:3px solid var(--ink);border-radius:4px;background:var(--ye)}
 .ihead h2{margin:14px 0 6px;font-size:22px}
-.ihead p{margin:0 auto 14px;max-width:32ch;color:#55556a}
+.ihead p{margin:0 auto 14px;max-width:32ch;color:var(--mu)}
 .iroom{display:inline-flex;align-items:center;gap:8px;font-weight:600}
 .chip.ye{background:var(--ye)}#invCode{font-family:ui-monospace,Menlo,monospace;letter-spacing:.1em}
 .big{display:grid;place-items:center;width:84px;height:84px;margin:0 auto 10px;border:3px solid var(--ink);border-radius:50%;background:hsl(var(--h,40) 80% 78%);font-size:44px}
 #invName{display:block;margin-bottom:14px;font-size:18px;font-weight:800;overflow-wrap:anywhere}
 .eg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}.eg .b{width:100%;padding:0;font-size:22px}
 .ifield .lr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.ifield label{font-weight:700}.ifield .n{font-size:13px;color:#55556a}
-.ifield .in{width:100%}.ifield small{display:block;margin:8px 0 16px;color:#55556a;font-size:13px}
+.ifield label{font-weight:700}.ifield .n{font-size:13px;color:var(--mu)}
+.ifield .in{width:100%}.ifield small{display:block;margin:8px 0 16px;color:var(--mu);font-size:13px}
 #invGo{width:100%;height:48px}
 .av,.big,#emoji,.eg .b{overflow:hidden}
 .av svg,.big svg,#emoji svg,.eg .b svg{display:block;width:100%;height:100%}
 #emoji{padding:0}#photo{display:grid;place-items:center}#photo svg{display:block;width:22px;height:22px}
 .eg{grid-template-columns:repeat(6,1fr)}.eg .b{aspect-ratio:1;height:auto;min-height:0}
 .eg .b.pri{outline:3px solid var(--ink);outline-offset:2px}
-.lang{display:inline-flex;border:3px solid var(--ink);border-radius:99px;background:#fff;overflow:hidden}
-.lang button{height:28px;min-width:38px;padding:0 10px;border:0;background:transparent;color:var(--ink);font-weight:800;font-size:13px;cursor:pointer}
-.lang button[aria-pressed="true"]{background:var(--ye)}
+.lang,.seg{display:inline-flex;border:3px solid var(--ink);border-radius:99px;background:var(--sf);overflow:hidden}
+.lang button,.seg button{height:28px;min-width:38px;padding:0 10px;border:0;background:transparent;color:var(--tx);font-weight:800;font-size:13px;cursor:pointer}
+.lang button[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--ye)}
 .hs1{position:relative;flex:none;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;padding:max(62px,calc(env(safe-area-inset-top) + 50px)) 20px 20px}
 @media (prefers-reduced-motion:reduce){#home{scroll-behavior:auto}}
 .hs2{flex:none;display:flex;justify-content:center;padding:24px 20px max(72px,calc(env(safe-area-inset-bottom) + 48px))}
-.dlcard{display:flex;align-items:center;gap:32px;width:100%;max-width:860px;padding:32px;border:3px solid var(--ink);border-radius:28px;background:#fff;color:var(--ink);box-shadow:10px 10px 0 var(--ink)}
+.dlcard{display:flex;align-items:center;gap:32px;width:100%;max-width:860px;padding:32px;border:3px solid var(--ink);border-radius:28px;background:var(--sf);color:var(--tx);box-shadow:10px 10px 0 var(--ink)}
 .dlcard img{flex:none;width:120px;height:120px;border:3px solid var(--ink);border-radius:28px;box-shadow:5px 5px 0 var(--ink)}
 .dlbody{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
 .dlcard h2{margin:0;font-family:Unbounded,system-ui,sans-serif;font-weight:900;font-size:clamp(24px,4vw,34px);line-height:1.05;letter-spacing:-.02em}
-.dlcard p{margin:0;max-width:46ch}.dlnote{font-size:13px;color:#55556a}
+.dlcard p{margin:0;max-width:46ch}.dlnote{font-size:13px;color:var(--mu)}
 #dlBtn{height:54px;padding:0 28px;font-size:16px}#dlBtn::before{content:"↓";font-weight:900;margin-right:8px}
 @media (max-width:640px){.dlcard{flex-direction:column;align-items:flex-start;gap:20px;padding:24px}.dlcard img{width:88px;height:88px;border-radius:22px}}
 .instfix{position:absolute;top:max(14px,env(safe-area-inset-top));left:16px;z-index:5}
 .inst::before{content:"↓";font-weight:900}
 #invite{padding-top:max(62px,calc(env(safe-area-inset-top) + 50px))}
 .modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(18,18,26,.6)}
-.mcard{width:min(100%,380px);padding:24px;border:3px solid var(--ink);border-radius:24px;background:#fff;color:var(--ink);box-shadow:8px 8px 0 var(--ink)}
+.mcard{width:min(100%,380px);padding:24px;border:3px solid var(--ink);border-radius:24px;background:var(--sf);color:var(--tx);box-shadow:8px 8px 0 var(--ink)}
 .mcard h2{margin:0 0 12px;font-size:20px}.mcard ol{margin:0 0 18px;padding-left:22px;display:grid;gap:8px}.mcard p{margin:0 0 18px}.mcard .b{width:100%}
-.langfix{position:absolute;top:max(14px,env(safe-area-inset-top));right:16px;z-index:5}
+.toolsfix{position:absolute;top:max(14px,env(safe-area-inset-top));right:16px;z-index:5;display:flex;gap:10px;align-items:center}
 @media (max-width:560px){.bar #cnt,#copy{display:none}.b{padding:0 12px}}
+/* tema claro e escuro */
+.seg button{display:grid;place-items:center;min-width:36px;padding:0 8px}.seg svg{display:block;width:16px;height:16px}
+.b.pri,.b.stop,button.chip,.chip.ye,.chn.cur,.pc.cur,.pill.live,.lang button[aria-pressed="true"],.seg button[aria-pressed="true"],#hint,.toast.err{color:var(--dk)}
+.pc.cur .pt small{color:#3a3a4d}
+:root[data-theme="dark"]{--bl:#0a0a0a;--ink:#f2f2f2;--sf:#161616;--tx:#f2f2f2;--mu:#a1a1aa;--glass:rgba(255,255,255,.06);color-scheme:dark}
 </style>
 </head>
 <body>
 <div id="home" class="v on">
-  <div class="lang langfix" role="group" aria-label="Idioma / Language"><button type="button" data-l="pt" aria-pressed="true">PT</button><button type="button" data-l="en" aria-pressed="false">EN</button></div>
+  <div class="toolsfix"><div class="lang" role="group" aria-label="Idioma / Language"><button type="button" data-l="pt" aria-pressed="true">PT</button><button type="button" data-l="en" aria-pressed="false">EN</button></div><div class="seg" role="group" aria-label="Tema" data-ia="theme"><button type="button" data-th="light" aria-pressed="true" aria-label="Modo claro" title="Modo claro" data-ia="themeLight" data-it="themeLight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button><button type="button" data-th="dark" aria-pressed="false" aria-label="Modo escuro" title="Modo escuro" data-ia="themeDark" data-it="themeDark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button></div></div>
   <div class="hs1">
   <section class="hero">
     <h1>SCREEN<sup>2.0</sup></h1>
@@ -202,8 +208,7 @@ button.pc{cursor:pointer}.pc.cur{background:var(--ye)}
 </div>
 
 <div id="invite" class="v">
-  <button class="chip inst instfix" type="button" data-i="install" hidden>Instalar app</button>
-  <div class="lang langfix" role="group" aria-label="Idioma / Language"><button type="button" data-l="pt" aria-pressed="true">PT</button><button type="button" data-l="en" aria-pressed="false">EN</button></div>
+  <div class="toolsfix"><div class="lang" role="group" aria-label="Idioma / Language"><button type="button" data-l="pt" aria-pressed="true">PT</button><button type="button" data-l="en" aria-pressed="false">EN</button></div><div class="seg" role="group" aria-label="Tema" data-ia="theme"><button type="button" data-th="light" aria-pressed="true" aria-label="Modo claro" title="Modo claro" data-ia="themeLight" data-it="themeLight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button><button type="button" data-th="dark" aria-pressed="false" aria-label="Modo escuro" title="Modo escuro" data-ia="themeDark" data-it="themeDark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button></div></div>
   <svg class="pulse" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100H420L440 70L470 100H700L730 20L770 170L805 70L835 100H1200"/></svg>
   <main class="icard" aria-labelledby="invTitle">
     <section class="isec ihead">
@@ -234,6 +239,7 @@ button.pc{cursor:pointer}.pc.cur{background:var(--ye)}
     <button class="chip" id="copy" type="button" title="Copiar link do convite" data-it="copyInvite"><span id="codeTxt">----</span> <span data-i="copyLink">Copiar link</span></button>
     <span class="sp"></span>
     <div class="lang" role="group" aria-label="Idioma / Language"><button type="button" data-l="pt" aria-pressed="true">PT</button><button type="button" data-l="en" aria-pressed="false">EN</button></div>
+    <div class="seg" role="group" aria-label="Tema" data-ia="theme"><button type="button" data-th="light" aria-pressed="true" aria-label="Modo claro" title="Modo claro" data-ia="themeLight" data-it="themeLight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button><button type="button" data-th="dark" aria-pressed="false" aria-label="Modo escuro" title="Modo escuro" data-ia="themeDark" data-it="themeDark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button></div>
     <span class="chip" id="cnt">1 pessoa</span>
     <span class="conn" id="conn"><i></i><span id="connTxt">Conectado</span></span>
   </header>
@@ -294,8 +300,8 @@ const st = {get:k=>{try{return localStorage.getItem(k)}catch{return null}}, set:
 
 let lang = st.get('m2.lang'); if(lang!=='pt'&&lang!=='en') lang = /^pt/i.test(navigator.language||'') ? 'pt' : 'en';
 const L = {
-pt:{dlTitle:"Leve o SCREEN com você",dlText:"Instale o SCREEN no celular ou no computador e abra uma sala com um toque, direto da tela inicial.",dlBtn:"Baixar aplicativo",dlNote:"Disponível para Android, iPhone, iPad e computador.",otherTitle:"Instalar o aplicativo",otherS1:"Abra o SCREEN no Chrome ou no Edge.",otherS2:"Clique no ícone de instalar na barra de endereço, ou abra o menu e escolha Instalar app.",otherS3:"Confirme em Instalar.",fileTitle:"Instalação indisponível aqui",fileMsg:"Para instalar, o SCREEN precisa estar publicado em um endereço https. Abrindo o arquivo direto do computador, o navegador não libera a instalação.",install:"Instalar app",installed:"App instalado.",iosTitle:"Instalar no iPhone ou iPad",iosS1:"Toque em Compartilhar, na barra do Safari.",iosS2:"Escolha Adicionar à Tela de Início.",iosS3:"Toque em Adicionar.",gotIt:"Entendi",title:"SCREEN 2.0 · Sua tela no ar",heroP:"Sua tela no ar. Abra uma sala, mande o código e todo mundo assiste junto, com o chat virando legenda ao vivo.",yourName:"Seu nome",nickPh:"Como te chamam?",emojiT:"Trocar avatar",an:id=>({gato:"Gato",cachorro:"Cachorro",raposa:"Raposa",panda:"Panda",urso:"Urso",coelho:"Coelho",leao:"Leão",tigre:"Tigre",macaco:"Macaco",sapo:"Sapo",coruja:"Coruja",pinguim:"Pinguim"})[id],photoT:"Foto da galeria",photoA:"Escolher foto da galeria",create:"Abrir sala",wait:"Aguarde...",or:"ou entre numa sala que já está no ar",codeLbl:"Código da sala",join:"Entrar",preTitle:"Antes de entrar",preSub:"Escolha como você vai aparecer para os outros participantes.",roomWord:"Sala",pickAv:"Escolher avatar",gallery:"Foto da galeria",nameHelp:"Esse nome fica visível para todos na sala.",enterRoom:"Entrar na sala",back:"← Voltar ao início",copyLink:"Copiar link",copyInvite:"Copiar link do convite",people:n=>n===1?"1 pessoa":n+" pessoas",connected:"Conectado",reconnecting:"Reconectando",noConn:"Sem conexão",liveH:n=>"Transmitindo — "+n,mosaic:"Mosaico",roomH:n=>"Na sala — "+n,empty:"Ninguém por aqui.",joinedAs:"Você entrou como",noSig:"Sem sinal",noSigSub:"Toque em Compartilhar tela para entrar no ar.",liveTag:"AO VIVO",fs:"Tela cheia",rxFire:"Reagir com fogo",rxClap:"Reagir com palmas",rxHeart:"Reagir com coração",chatPh:"Escreva e dê Enter",chatLbl:"Mensagem",leave:"Sair",share:"Compartilhar tela",stopShare:"Parar transmissão",sharing:"Compartilhando tela",you:"Você",youP:"(você)",guest:"Convidado",tuning:"Sintonizando...",needName:"Escolha um nome para entrar.",noPeer:"Não foi possível carregar o PeerJS. Verifique a internet.",codeFull:"Digite o código completo (XXXX-XXXX).",openFail:"Não foi possível abrir a sala. Tente de novo.",notFound:"Sala não encontrada. Confira o código.",full:n=>"Sala cheia (máximo de "+n+" pessoas).",connFail:"Falha ao conectar na sala.",netFail:"Falha de conexão. Tente de novo.",hostEnded:"A sala foi encerrada pelo anfitrião.",copied:"Link do convite copiado.",copyFail:"Não foi possível copiar o link.",tapSound:"Toque na tela para ativar o som.",fsNo:"Tela cheia indisponível neste navegador.",noShare:"Este navegador não suporta compartilhar tela.",shareFail:"Não foi possível compartilhar a tela.",notImg:"Escolha um arquivo de imagem.",avSet:"Foto definida como avatar.",imgFail:"Não foi possível usar essa imagem.",confirmLeave:"Você é o anfitrião. Sair encerra a sala para todos. Continuar?"},
-en:{dlTitle:"Take SCREEN with you",dlText:"Install SCREEN on your phone or computer and open a room with one tap, straight from your home screen.",dlBtn:"Download app",dlNote:"Available for Android, iPhone, iPad and desktop.",otherTitle:"Install the app",otherS1:"Open SCREEN in Chrome or Edge.",otherS2:"Click the install icon in the address bar, or open the menu and choose Install app.",otherS3:"Confirm by clicking Install.",fileTitle:"Installation unavailable here",fileMsg:"To install, SCREEN must be served from an https address. When the file is opened straight from your computer, the browser does not allow installation.",install:"Install app",installed:"App installed.",iosTitle:"Install on iPhone or iPad",iosS1:"Tap Share in the Safari toolbar.",iosS2:"Choose Add to Home Screen.",iosS3:"Tap Add.",gotIt:"Got it",title:"SCREEN 2.0 · Your screen, live",heroP:"Your screen, live. Open a room, send the code and everyone watches together, with the chat turning into live captions.",yourName:"Your name",nickPh:"What should we call you?",emojiT:"Change avatar",an:id=>({gato:"Cat",cachorro:"Dog",raposa:"Fox",panda:"Panda",urso:"Bear",coelho:"Rabbit",leao:"Lion",tigre:"Tiger",macaco:"Monkey",sapo:"Frog",coruja:"Owl",pinguim:"Penguin"})[id],photoT:"Photo from gallery",photoA:"Choose a photo from your gallery",create:"Open room",wait:"Please wait...",or:"or join a room that is already live",codeLbl:"Room code",join:"Join",preTitle:"Before you join",preSub:"Choose how you will appear to the other participants.",roomWord:"Room",pickAv:"Choose avatar",gallery:"Photo from gallery",nameHelp:"This name is visible to everyone in the room.",enterRoom:"Join room",back:"← Back to start",copyLink:"Copy link",copyInvite:"Copy invite link",people:n=>n===1?"1 person":n+" people",connected:"Connected",reconnecting:"Reconnecting",noConn:"Disconnected",liveH:n=>"Streaming — "+n,mosaic:"Grid",roomH:n=>"In the room — "+n,empty:"No one here.",joinedAs:"You joined as",noSig:"No signal",noSigSub:"Tap Share screen to go live.",liveTag:"LIVE",fs:"Fullscreen",rxFire:"React with fire",rxClap:"React with clapping",rxHeart:"React with heart",chatPh:"Type and press Enter",chatLbl:"Message",leave:"Leave",share:"Share screen",stopShare:"Stop streaming",sharing:"Sharing screen",you:"You",youP:"(you)",guest:"Guest",tuning:"Tuning in...",needName:"Choose a name to join.",noPeer:"Could not load PeerJS. Check your internet connection.",codeFull:"Enter the full code (XXXX-XXXX).",openFail:"Could not open the room. Try again.",notFound:"Room not found. Check the code.",full:n=>"Room is full (maximum "+n+" people).",connFail:"Failed to connect to the room.",netFail:"Connection failed. Try again.",hostEnded:"The room was closed by the host.",copied:"Invite link copied.",copyFail:"Could not copy the link.",tapSound:"Tap the screen to turn on sound.",fsNo:"Fullscreen is not available in this browser.",noShare:"This browser does not support screen sharing.",shareFail:"Could not share the screen.",notImg:"Choose an image file.",avSet:"Photo set as avatar.",imgFail:"Could not use that image.",confirmLeave:"You are the host. Leaving closes the room for everyone. Continue?"}
+pt:{theme:"Tema",themeLight:"Modo claro",themeDark:"Modo escuro",dlTitle:"Leve o SCREEN com você",dlText:"Instale o SCREEN no celular ou no computador e abra uma sala com um toque, direto da tela inicial.",dlBtn:"Baixar aplicativo",dlNote:"Disponível para Android, iPhone, iPad e computador.",otherTitle:"Instalar o aplicativo",otherS1:"Abra o SCREEN no Chrome ou no Edge.",otherS2:"Clique no ícone de instalar na barra de endereço, ou abra o menu e escolha Instalar app.",otherS3:"Confirme em Instalar.",fileTitle:"Instalação indisponível aqui",fileMsg:"Para instalar, o SCREEN precisa estar publicado em um endereço https. Abrindo o arquivo direto do computador, o navegador não libera a instalação.",install:"Instalar app",installed:"App instalado.",iosTitle:"Instalar no iPhone ou iPad",iosS1:"Toque em Compartilhar, na barra do Safari.",iosS2:"Escolha Adicionar à Tela de Início.",iosS3:"Toque em Adicionar.",gotIt:"Entendi",title:"SCREEN 2.0 · Sua tela no ar",heroP:"Sua tela no ar. Abra uma sala, mande o código e todo mundo assiste junto, com o chat virando legenda ao vivo.",yourName:"Seu nome",nickPh:"Como te chamam?",emojiT:"Trocar avatar",an:id=>({gato:"Gato",cachorro:"Cachorro",raposa:"Raposa",panda:"Panda",urso:"Urso",coelho:"Coelho",leao:"Leão",tigre:"Tigre",macaco:"Macaco",sapo:"Sapo",coruja:"Coruja",pinguim:"Pinguim"})[id],photoT:"Foto da galeria",photoA:"Escolher foto da galeria",create:"Abrir sala",wait:"Aguarde...",or:"ou entre numa sala que já está no ar",codeLbl:"Código da sala",join:"Entrar",preTitle:"Antes de entrar",preSub:"Escolha como você vai aparecer para os outros participantes.",roomWord:"Sala",pickAv:"Escolher avatar",gallery:"Foto da galeria",nameHelp:"Esse nome fica visível para todos na sala.",enterRoom:"Entrar na sala",back:"← Voltar ao início",copyLink:"Copiar link",copyInvite:"Copiar link do convite",people:n=>n===1?"1 pessoa":n+" pessoas",connected:"Conectado",reconnecting:"Reconectando",noConn:"Sem conexão",liveH:n=>"Transmitindo — "+n,mosaic:"Mosaico",roomH:n=>"Na sala — "+n,empty:"Ninguém por aqui.",joinedAs:"Você entrou como",noSig:"Sem sinal",noSigSub:"Toque em Compartilhar tela para entrar no ar.",liveTag:"AO VIVO",fs:"Tela cheia",rxFire:"Reagir com fogo",rxClap:"Reagir com palmas",rxHeart:"Reagir com coração",chatPh:"Escreva e dê Enter",chatLbl:"Mensagem",leave:"Sair",share:"Compartilhar tela",stopShare:"Parar transmissão",sharing:"Compartilhando tela",you:"Você",youP:"(você)",guest:"Convidado",tuning:"Sintonizando...",needName:"Escolha um nome para entrar.",noPeer:"Não foi possível carregar o PeerJS. Verifique a internet.",codeFull:"Digite o código completo (XXXX-XXXX).",openFail:"Não foi possível abrir a sala. Tente de novo.",notFound:"Sala não encontrada. Confira o código.",full:n=>"Sala cheia (máximo de "+n+" pessoas).",connFail:"Falha ao conectar na sala.",netFail:"Falha de conexão. Tente de novo.",hostEnded:"A sala foi encerrada pelo anfitrião.",copied:"Link do convite copiado.",copyFail:"Não foi possível copiar o link.",tapSound:"Toque na tela para ativar o som.",fsNo:"Tela cheia indisponível neste navegador.",noShare:"Este navegador não suporta compartilhar tela.",shareFail:"Não foi possível compartilhar a tela.",notImg:"Escolha um arquivo de imagem.",avSet:"Foto definida como avatar.",imgFail:"Não foi possível usar essa imagem.",confirmLeave:"Você é o anfitrião. Sair encerra a sala para todos. Continuar?"},
+en:{theme:"Theme",themeLight:"Light mode",themeDark:"Dark mode",dlTitle:"Take SCREEN with you",dlText:"Install SCREEN on your phone or computer and open a room with one tap, straight from your home screen.",dlBtn:"Download app",dlNote:"Available for Android, iPhone, iPad and desktop.",otherTitle:"Install the app",otherS1:"Open SCREEN in Chrome or Edge.",otherS2:"Click the install icon in the address bar, or open the menu and choose Install app.",otherS3:"Confirm by clicking Install.",fileTitle:"Installation unavailable here",fileMsg:"To install, SCREEN must be served from an https address. When the file is opened straight from your computer, the browser does not allow installation.",install:"Install app",installed:"App installed.",iosTitle:"Install on iPhone or iPad",iosS1:"Tap Share in the Safari toolbar.",iosS2:"Choose Add to Home Screen.",iosS3:"Tap Add.",gotIt:"Got it",title:"SCREEN 2.0 · Your screen, live",heroP:"Your screen, live. Open a room, send the code and everyone watches together, with the chat turning into live captions.",yourName:"Your name",nickPh:"What should we call you?",emojiT:"Change avatar",an:id=>({gato:"Cat",cachorro:"Dog",raposa:"Fox",panda:"Panda",urso:"Bear",coelho:"Rabbit",leao:"Lion",tigre:"Tiger",macaco:"Monkey",sapo:"Frog",coruja:"Owl",pinguim:"Penguin"})[id],photoT:"Photo from gallery",photoA:"Choose a photo from your gallery",create:"Open room",wait:"Please wait...",or:"or join a room that is already live",codeLbl:"Room code",join:"Join",preTitle:"Before you join",preSub:"Choose how you will appear to the other participants.",roomWord:"Room",pickAv:"Choose avatar",gallery:"Photo from gallery",nameHelp:"This name is visible to everyone in the room.",enterRoom:"Join room",back:"← Back to start",copyLink:"Copy link",copyInvite:"Copy invite link",people:n=>n===1?"1 person":n+" people",connected:"Connected",reconnecting:"Reconnecting",noConn:"Disconnected",liveH:n=>"Streaming — "+n,mosaic:"Grid",roomH:n=>"In the room — "+n,empty:"No one here.",joinedAs:"You joined as",noSig:"No signal",noSigSub:"Tap Share screen to go live.",liveTag:"LIVE",fs:"Fullscreen",rxFire:"React with fire",rxClap:"React with clapping",rxHeart:"React with heart",chatPh:"Type and press Enter",chatLbl:"Message",leave:"Leave",share:"Share screen",stopShare:"Stop streaming",sharing:"Sharing screen",you:"You",youP:"(you)",guest:"Guest",tuning:"Tuning in...",needName:"Choose a name to join.",noPeer:"Could not load PeerJS. Check your internet connection.",codeFull:"Enter the full code (XXXX-XXXX).",openFail:"Could not open the room. Try again.",notFound:"Room not found. Check the code.",full:n=>"Room is full (maximum "+n+" people).",connFail:"Failed to connect to the room.",netFail:"Connection failed. Try again.",hostEnded:"The room was closed by the host.",copied:"Invite link copied.",copyFail:"Could not copy the link.",tapSound:"Tap the screen to turn on sound.",fsNo:"Fullscreen is not available in this browser.",noShare:"This browser does not support screen sharing.",shareFail:"Could not share the screen.",notImg:"Choose an image file.",avSet:"Photo set as avatar.",imgFail:"Could not use that image.",confirmLeave:"You are the host. Leaving closes the room for everyone. Continue?"}
 };
 const tr = (k,...a) => {const v=(L[lang]||L.pt)[k]; return typeof v==='function'?v(...a):v};
 let tt; const toast = (m,e) => {const t=$('toast'); t.textContent=m; t.classList.toggle('err',!!e); t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),3200)};
@@ -630,6 +636,14 @@ function applyLang(){
   setBusy(busy); updShare(); paintInv(); if(session) render();
 }
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.l; st.set('m2.lang',lang); applyLang()});
+let theme = st.get('m2.theme')==='dark' ? 'dark' : 'light';
+function applyTheme(){
+  document.documentElement.dataset.theme = theme;
+  const m = document.querySelector('meta[name=theme-color]'); if(m) m.content = theme==='dark' ? '#0a0a0a' : '#2342ff';
+  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.th===theme)));
+}
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{theme=b.dataset.th; st.set('m2.theme',theme); applyTheme()});
+applyTheme();
 applyLang();
 paintMe();
 if(valid(fromUrl)){codeIn.value=fromUrl; $('invCode').textContent=fromUrl; invNick.value=nickIn.value; paintInv(); refresh(); view('invite'); invNick.focus()}
